@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class Inventory : MonoBehaviour
 {
@@ -26,20 +27,13 @@ public class Inventory : MonoBehaviour
             activeItem.text = "Active item: " + inventoryMan.activeItem.itemName;
         else
             activeItem.text = "No active item";
-
-        if (gameMan.gameState == GameManager.GameState.ItemHandling && Input.GetMouseButtonDown(1))
-        {
-            gameMan.SwitchGameState(GameManager.GameState.Navigation);
-            AddItem(inventoryMan.activeItem);
-            inventoryMan.activeItem = null;
-        }
     }
 
     public void AddItem(ItemScriptable item)
     {
         if (item == null)
         {
-            DebugMessage("Item " + item.name + " does not exist.");
+            DebugMessage("Item does not exist.");
             return;
         }
 
@@ -70,23 +64,17 @@ public class Inventory : MonoBehaviour
         inventoryMan.inventoryData.items.Remove(item.itemName);
     }
 
-    public void ReturnItem()
-    {
-        AddItem(inventoryMan.activeItem);
-        inventoryMan.activeItem = null;
-    }
-
     public void CombineItems(ItemScriptable item)
     {
 
     }
 
-    public void SellectItem(ItemScriptable item)
+    public void SelectItem(ItemScriptable item)
     {
         print("Sellecting item: " + item.itemName);
 
         inventoryMan.activeItem = item;
-        inventoryMan.inventory.RemoveItem(item);
+        RemoveItem(item);
         gameMan.SwitchGameState(GameManager.GameState.ItemHandling);
 
         RemoveItem(item);
@@ -94,11 +82,19 @@ public class Inventory : MonoBehaviour
 
     public void DesellectItem()
     {
-        if (gameMan.gameState != GameManager.GameState.ItemHandling) return;
-
+        AddItem(inventoryMan.activeItem);
         ReturnItem();
         uiMan.inventoryUI.CloseInventory();
         gameMan.SwitchGameState(GameManager.GameState.Navigation);
+    }
+
+    public void ReturnItem()
+    {
+        if (inventoryMan.activeItem != null)
+        {
+            inventoryMan.inventoryData.items.Add(inventoryMan.activeItem.itemName);
+            inventoryMan.activeItem = null;
+        }
     }
 
     public bool CheckItemInInventory(string itemName)

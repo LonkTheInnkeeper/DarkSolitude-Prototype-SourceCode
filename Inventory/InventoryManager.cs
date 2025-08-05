@@ -20,4 +20,17 @@ public class InventoryManager : MonoBehaviour
     {
         inventoryData = GameManager.Instance.playerData.inventoryData;
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            foreach (var item in inventoryData.items)
+            {
+                {
+                    print(item);
+                }
+            }
+        }
+    }
 }

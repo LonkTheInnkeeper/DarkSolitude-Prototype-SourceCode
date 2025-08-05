@@ -5,6 +5,7 @@ public class InventoryItemUI : MonoBehaviour
 {
     ItemScriptable item;
     Image icon;
+    [SerializeField] Sprite defaultIcon;
 
     InventoryManager inventoryMan;
 
@@ -20,7 +21,7 @@ public class InventoryItemUI : MonoBehaviour
         if (item == null)
         {
             this.item = null;
-            icon.sprite = null;
+            icon.sprite = defaultIcon;
             return;
         }
 
@@ -33,20 +34,44 @@ public class InventoryItemUI : MonoBehaviour
         return item == null;
     }
 
-    public void SellectItem()
+    public void SlotClick()
     {
-        if (item == null || GameManager.Instance.gameState != GameManager.GameState.Inventory)
-            return;
-
-        if (inventoryMan.activeItem != null)
+        switch (GameManager.Instance.gameState)
         {
-            inventoryMan.inventory.CombineItems(item);
-        }
-        else
-        {
-            inventoryMan.inventory.SellectItem(item);
-        }
+            case GameManager.GameState.Inventory:
+                {
+                    if (item == null) return;
 
-        SetItem(null);
+                    if (inventoryMan.activeItem != null)
+                    {
+                        inventoryMan.inventory.CombineItems(item);
+                    }
+                    else
+                    {
+                        inventoryMan.inventory.SelectItem(item);
+                    }
+
+                    SetItem(null);
+
+                    break;
+                }
+
+            case GameManager.GameState.ItemHandling:
+                {
+                    if (item != null) return;
+
+                    SetItem(inventoryMan.activeItem);
+                    inventoryMan.inventory.ReturnItem();
+                    GameManager.Instance.SwitchGameState(GameManager.GameState.Inventory);
+
+                    break;
+                }
+
+            default:
+                {
+                    print("Unexpected inventory action");
+                    break;
+                }
+        }
     }
 }

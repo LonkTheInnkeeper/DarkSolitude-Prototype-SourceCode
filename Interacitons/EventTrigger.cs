@@ -40,8 +40,6 @@ public class EventTrigger : MonoBehaviour, IInteractable
             }
         }
 
-
-
         if (item == null)
         {
             print("Using event trigger");
@@ -66,8 +64,7 @@ public class EventTrigger : MonoBehaviour, IInteractable
             Debug.LogWarning("Trying to use wrong item");
             if (inventoryMan.activeItem != null)
             {
-                inventoryMan.inventory.AddItem(item);
-                inventoryMan.activeItem = null;
+                inventoryMan.inventory.DesellectItem();
             }
         }
     }

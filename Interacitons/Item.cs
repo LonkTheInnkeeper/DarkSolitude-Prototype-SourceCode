@@ -19,9 +19,15 @@ public class Item : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        UIManager uiMan = UIManager.Instance;
+        InventoryManager inventoryMan = InventoryManager.Instance;
 
-        InventoryManager.Instance.inventory.AddItem(item);
+        if (inventoryMan.activeItem != null)
+        {
+            inventoryMan.inventory.ReturnItem();
+            return;
+        }
+
+        inventoryMan.inventory.AddItem(item);
 
         if (hideItem) gameObject.SetActive(false);
     }
