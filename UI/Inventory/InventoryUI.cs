@@ -44,7 +44,13 @@ public class InventoryUI : MonoBehaviour
 
     public void CloseInventory()
     {
-        inventoryPanel.gameObject.SetActive(false);
+        if (inventoryPanel.gameObject.activeInHierarchy)
+            inventoryPanel.gameObject.SetActive(false);
+
+        if (gameMan.gameState == GameManager.GameState.Inventory)
+        {
+            gameMan.SwitchGameState(GameManager.GameState.Navigation);
+        }
     }
 
     public void AddItem(ItemScriptable item)

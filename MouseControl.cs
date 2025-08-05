@@ -51,28 +51,11 @@ public class MouseControl : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            DesselectItem();
-            CloseInventory();
-        }
-    }
-
-    private void DesselectItem()
-    {
-        if (gameMan.gameState != GameManager.GameState.ItemHandling) return;
-
-        inventoryMan.inventory.ReturnItem();
-        uiMan.inventoryUI.CloseInventory();
-        gameMan.SwitchGameState(GameManager.GameState.Navigation);
-    }
-
-    private void CloseInventory()
-    {
-        if (gameMan.gameState == GameManager.GameState.Inventory)
-        {
+            inventoryMan.inventory.DesellectItem();
             uiMan.inventoryUI.CloseInventory();
-            gameMan.SwitchGameState(GameManager.GameState.Navigation);
         }
     }
+
 
     private void UseItem()
     {

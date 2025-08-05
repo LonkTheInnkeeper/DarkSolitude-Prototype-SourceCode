@@ -92,6 +92,15 @@ public class Inventory : MonoBehaviour
         RemoveItem(item);
     }
 
+    public void DesellectItem()
+    {
+        if (gameMan.gameState != GameManager.GameState.ItemHandling) return;
+
+        ReturnItem();
+        uiMan.inventoryUI.CloseInventory();
+        gameMan.SwitchGameState(GameManager.GameState.Navigation);
+    }
+
     public bool CheckItemInInventory(string itemName)
     {
         return inventoryMan.inventoryData.CheckItem(itemName);
