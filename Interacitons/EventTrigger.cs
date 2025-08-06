@@ -56,7 +56,7 @@ public class EventTrigger : MonoBehaviour, IInteractable
                 inventoryMan.inventoryData.items.Remove(item.name);
             }
 
-            inventoryMan.activeItem = null;
+            inventoryMan.SetActiveItem(null);
             eventTrigger.Invoke();
         }
         else

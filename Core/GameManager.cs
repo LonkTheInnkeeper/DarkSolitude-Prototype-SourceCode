@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public GameState gameState;
     public GameObject player;
     public PlayerData playerData;
+    public MouseControl mouseControl;
 
     [SerializeField] TextMeshProUGUI gameStateDebug;
 

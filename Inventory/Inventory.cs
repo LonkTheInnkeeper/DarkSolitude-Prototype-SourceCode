@@ -37,7 +37,6 @@ public class Inventory : MonoBehaviour
             return;
         }
 
-        inventoryMan.inventoryData.items.Add(item.itemName);
         uiMan.inventoryUI.AddItem(item);
 
         DebugMessage("Adding item: " + item.name);
@@ -53,31 +52,31 @@ public class Inventory : MonoBehaviour
             return;
         }
 
-        inventoryMan.inventoryData.items.Add(item.itemName);
         uiMan.inventoryUI.AddItem(item);
 
         DebugMessage("Adding item: " + item.name);
     }
 
-    public void RemoveItem(ItemScriptable item)
+    public ItemScriptable CombineItems(ItemScriptable secondItem)
     {
-        inventoryMan.inventoryData.items.Remove(item.itemName);
-    }
-
-    public void CombineItems(ItemScriptable item)
-    {
-
+        if (secondItem == inventoryMan.activeItem.secondItem)
+        {
+            print("Combining items");
+            return secondItem.comboResult;
+        }
+        else
+        {
+            print("Can't combine items");
+            return null;
+        }
     }
 
     public void SelectItem(ItemScriptable item)
     {
         print("Sellecting item: " + item.itemName);
 
-        inventoryMan.activeItem = item;
-        RemoveItem(item);
+        inventoryMan.SetActiveItem(item);
         gameMan.SwitchGameState(GameManager.GameState.ItemHandling);
-
-        RemoveItem(item);
     }
 
     public void DesellectItem()
@@ -92,8 +91,7 @@ public class Inventory : MonoBehaviour
     {
         if (inventoryMan.activeItem != null)
         {
-            inventoryMan.inventoryData.items.Add(inventoryMan.activeItem.itemName);
-            inventoryMan.activeItem = null;
+            inventoryMan.SetActiveItem(null);
         }
     }
 

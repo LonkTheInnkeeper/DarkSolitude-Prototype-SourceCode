@@ -8,10 +8,12 @@ public class InventoryItemUI : MonoBehaviour
     [SerializeField] Sprite defaultIcon;
 
     InventoryManager inventoryMan;
+    GameManager gameMan;
 
     private void Start()
     {
         inventoryMan = InventoryManager.Instance;
+        gameMan = GameManager.Instance;
     }
 
     public void SetItem(ItemScriptable item)
@@ -36,21 +38,13 @@ public class InventoryItemUI : MonoBehaviour
 
     public void SlotClick()
     {
-        switch (GameManager.Instance.gameState)
+        switch (gameMan.gameState)
         {
             case GameManager.GameState.Inventory:
                 {
                     if (item == null) return;
 
-                    if (inventoryMan.activeItem != null)
-                    {
-                        inventoryMan.inventory.CombineItems(item);
-                    }
-                    else
-                    {
-                        inventoryMan.inventory.SelectItem(item);
-                    }
-
+                    inventoryMan.inventory.SelectItem(item);
                     SetItem(null);
 
                     break;
@@ -58,11 +52,25 @@ public class InventoryItemUI : MonoBehaviour
 
             case GameManager.GameState.ItemHandling:
                 {
-                    if (item != null) return;
+                    if (item != null)
+                    {
+                        if (inventoryMan.activeItem != null)
+                        {
+                            ItemScriptable comboItem = inventoryMan.inventory.CombineItems(item);
+                            if (comboItem != null)
+                            {
+                                inventoryMan.SetActiveItem(null);
+                                SetItem(comboItem);
+                                gameMan.SwitchGameState(GameManager.GameState.Inventory);
+                            }
+                        }
+
+                        return;
+                    }
 
                     SetItem(inventoryMan.activeItem);
                     inventoryMan.inventory.ReturnItem();
-                    GameManager.Instance.SwitchGameState(GameManager.GameState.Inventory);
+                    gameMan.SwitchGameState(GameManager.GameState.Inventory);
 
                     break;
                 }

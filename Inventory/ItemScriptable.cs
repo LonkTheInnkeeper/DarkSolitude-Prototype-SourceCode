@@ -11,6 +11,6 @@ public class ItemScriptable : ScriptableObject
     public Texture2D cursorIcon;
 
     [Header("Combination")]
-    public string comboItemName;
-    public string comboResultName;
+    public ItemScriptable secondItem;
+    public ItemScriptable comboResult;
 }

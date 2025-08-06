@@ -21,16 +21,17 @@ public class InventoryManager : MonoBehaviour
         inventoryData = GameManager.Instance.playerData.inventoryData;
     }
 
-    private void Update()
+    public void SetActiveItem(ItemScriptable item)
     {
-        if (Input.GetKeyDown(KeyCode.U))
+        if (item != null)
         {
-            foreach (var item in inventoryData.items)
-            {
-                {
-                    print(item);
-                }
-            }
+            GameManager.Instance.mouseControl.SetItemCursor(item.cursorIcon);
         }
+        else
+        {
+            GameManager.Instance.mouseControl.SetDefaultCursor();
+        }
+
+        activeItem = item;
     }
 }

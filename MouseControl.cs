@@ -97,4 +97,14 @@ public class MouseControl : MonoBehaviour
             playerMovement.SetDestination(target);
         }
     }
+
+    public void SetDefaultCursor()
+    {
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+    }
+
+    public void SetItemCursor(Texture2D cursor)
+    {
+        Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
+    }
 }
