@@ -24,7 +24,7 @@ public class InventoryUI : MonoBehaviour
                 gameMan.SwitchGameState(GameManager.GameState.Inventory);
                 inventoryPanel.gameObject.SetActive(true);
             }
-            else
+            else if (gameMan.gameState == GameManager.GameState.Inventory)
             {
                 gameMan.SwitchGameState(GameManager.GameState.Navigation);
                 inventoryPanel.gameObject.SetActive(false);

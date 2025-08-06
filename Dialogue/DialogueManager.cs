@@ -38,15 +38,6 @@ public class DialogueManager : MonoBehaviour
         events = GetComponent<DialogueEventHandler>();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            GameManager.Instance.SwitchGameState(GameManager.GameState.Dialogue);
-            dialogue.EnterDialogueMode(debugDialogue);
-        }
-    }
-
     public void SetActiveCharacter(string charName)
     {
         DebugMessage("Setting character " + charName);

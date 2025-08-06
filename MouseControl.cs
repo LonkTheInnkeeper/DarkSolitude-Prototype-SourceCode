@@ -51,8 +51,12 @@ public class MouseControl : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            inventoryMan.inventory.DesellectItem();
-            uiMan.inventoryUI.CloseInventory();
+            if (gameMan.gameState == GameManager.GameState.Inventory ||
+                gameMan.gameState == GameManager.GameState.ItemHandling)
+            {
+                inventoryMan.inventory.DesellectItem();
+                uiMan.inventoryUI.CloseInventory();
+            }
         }
     }
 
@@ -63,7 +67,7 @@ public class MouseControl : MonoBehaviour
 
         IInteractable interactable = hit.collider.gameObject.GetComponent<IInteractable>();
 
-        if (interactable != null) 
+        if (interactable != null)
         {
             gameMan.SwitchGameState(GameManager.GameState.Navigation);
             playerMovement.SetInteractable(interactable);

@@ -6,6 +6,7 @@ public class UIManager : MonoBehaviour
 
     public InventoryUI inventoryUI;
     public DialogueUI dialogueUI;
+    public DiaryUI diaryUI;
 
     private void Awake()
     {

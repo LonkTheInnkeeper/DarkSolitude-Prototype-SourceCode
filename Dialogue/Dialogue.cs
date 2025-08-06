@@ -9,6 +9,7 @@ public class Dialogue : MonoBehaviour
     DialogueManager dialogueMan;
     UIManager uiMan;
 
+    bool diary = false;
     string currentChoice = string.Empty;
     bool debugMessage = true;
 
@@ -19,8 +20,9 @@ public class Dialogue : MonoBehaviour
         uiMan = UIManager.Instance;
     }
 
-    public void EnterDialogueMode(string dialogueName)
+    public void EnterDialogueMode(string dialogueName, bool diary)
     {
+        this.diary = diary;
         TextAsset textFile = dialogueMan.database.GetDialogue(dialogueName);
 
         if (textFile == null)
@@ -31,7 +33,14 @@ public class Dialogue : MonoBehaviour
 
         gameMan.SwitchGameState(GameManager.GameState.Dialogue);
 
-        uiMan.dialogueUI.NewDialogue();
+        if (diary)
+        {
+            uiMan.diaryUI.NewDiary();
+        }
+        else
+        {
+            uiMan.dialogueUI.NewDialogue();
+        }
 
         currentStory = new Story(textFile.text);
         dialogueMan.events.RegisterBaseFunctions(currentStory);
@@ -41,14 +50,21 @@ public class Dialogue : MonoBehaviour
         DebugMessage("Dialogue starts with " + textFile.name);
     }
 
-    public void ContinueStory()
+    private void ContinueStory()
     {
         if (currentStory.canContinue)
         {
             string text = currentStory.Continue();
 
-            uiMan.dialogueUI.PrintDialogueText(text, currentChoice);
-            uiMan.dialogueUI.PrintChoices(currentStory.currentChoices);
+            if (diary)
+            {
+                uiMan.diaryUI.PrintDiary(currentStory);
+            }
+            else
+            {
+                uiMan.dialogueUI.PrintDialogueText(text, currentChoice);
+                uiMan.dialogueUI.PrintChoices(currentStory.currentChoices);
+            }
         }
 
         else
