@@ -8,10 +8,8 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] RectTransform dialoguePanel;
     [SerializeField] RectTransform dialogueContent;
     [SerializeField] RectTransform textPref;
-    [SerializeField] ScrollRect scrollRect;
-    [Space]
-    //[SerializeField] RectTransform choicesPanel;
     [SerializeField] RectTransform choicePref;
+    [SerializeField] ScrollRect scrollRect;
 
     List<RectTransform> content = new List<RectTransform>();
     List<RectTransform> choices = new List<RectTransform>();
