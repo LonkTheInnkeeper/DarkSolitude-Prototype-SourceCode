@@ -15,7 +15,8 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] string debugDialogue;
 
     public Dialogue dialogue;
-    public DialogueDatabase database;
+    public DialogueDatabase dialogueDatabase;
+    public DiaryDatabase diaryDatabase;
     public DialogueEventHandler events;
 
     private void Awake()
@@ -34,7 +35,7 @@ public class DialogueManager : MonoBehaviour
     private void Start()
     {
         dialogue = GetComponent<Dialogue>();
-        database = GetComponent<DialogueDatabase>();
+        dialogueDatabase = GetComponent<DialogueDatabase>();
         events = GetComponent<DialogueEventHandler>();
     }
 

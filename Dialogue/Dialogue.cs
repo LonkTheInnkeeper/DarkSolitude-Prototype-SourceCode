@@ -23,7 +23,17 @@ public class Dialogue : MonoBehaviour
     public void EnterDialogueMode(string dialogueName, bool diary)
     {
         this.diary = diary;
-        TextAsset textFile = dialogueMan.database.GetDialogue(dialogueName);
+
+        TextAsset textFile = null;
+
+        if (diary)
+        {
+            textFile = dialogueMan.diaryDatabase.GetDiary(dialogueName);
+        }
+        else
+        {
+            textFile = dialogueMan.dialogueDatabase.GetDialogue(dialogueName);
+        }
 
         if (textFile == null)
         {
@@ -58,7 +68,7 @@ public class Dialogue : MonoBehaviour
 
             if (diary)
             {
-                uiMan.diaryUI.PrintDiary(currentStory);
+                currentStory = uiMan.diaryUI.PrintDiary(currentStory);
             }
             else
             {
@@ -91,11 +101,16 @@ public class Dialogue : MonoBehaviour
         ContinueStory();
     }
 
-    private void ExitDialogue()
+    public void ExitDialogue()
     {
         currentStory = null;
         currentChoice = string.Empty;
-        uiMan.dialogueUI.ExitDialogue();
+
+        if (!diary)
+        {
+            uiMan.dialogueUI.ExitDialogue();
+        }
+
         gameMan.SwitchGameState(GameManager.GameState.Navigation);
     }
 

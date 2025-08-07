@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DialogueDatabase : MonoBehaviour
+public class DiaryDatabase : MonoBehaviour
 {
     public List<TextAsset> en;
     public List<TextAsset> cz;
 
-    public TextAsset GetDialogue(string name)
+    public TextAsset GetDiary(string name)
     {
         if (!PlayerPrefs.HasKey("Localisation"))
             return en.FirstOrDefault(item => item.name == name);
