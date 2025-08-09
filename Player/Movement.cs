@@ -108,4 +108,9 @@ public class Movement : MonoBehaviour
             }
         }
     }
+
+    public void WarpTo(Vector3 position)
+    {
+        navigation.Warp(position);
+    }
 }

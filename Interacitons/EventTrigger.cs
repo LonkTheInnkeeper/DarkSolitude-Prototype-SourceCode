@@ -24,11 +24,10 @@ public class EventTrigger : MonoBehaviour, IInteractable
     public void Interact()
     {
         InventoryManager inventoryMan = InventoryManager.Instance;
-        InteractionsData interactionsData = GameManager.Instance.playerData.interactionsData;
 
         if (eventKey != string.Empty)
         {
-            if (interactionsData.HasEventKey(eventKey))
+            if (GameManager.Instance.playerData.HasEventKey(eventKey))
             {
                 print("This event has already been triggered");
                 return;
@@ -36,7 +35,7 @@ public class EventTrigger : MonoBehaviour, IInteractable
             else
             {
                 print("Adding event key: " + eventKey);
-                interactionsData.eventKeys.Add(eventKey);
+                GameManager.Instance.playerData.StoreEventKey(eventKey);
             }
         }
 

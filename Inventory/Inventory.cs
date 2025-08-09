@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using static UnityEditor.Progress;
@@ -98,6 +99,28 @@ public class Inventory : MonoBehaviour
     public bool CheckItemInInventory(string itemName)
     {
         return inventoryMan.inventoryData.CheckItem(itemName);
+    }
+
+    public void LoadInventory()
+    {
+        List<string> items = gameMan.playerData.GetAllItems();
+
+        foreach (var item in items)
+        {
+            AddItem(item);
+        }
+    }
+
+    public void SaveInventory()
+    {
+        List<string> items = new List<string>();
+
+        foreach (var item in uiMan.inventoryUI.GetAllItems())
+        {
+            items.Add(item.itemName);
+        }
+
+        gameMan.playerData.SaveItems(items);
     }
 
     void DebugMessage(string message)

@@ -82,4 +82,9 @@ public class InventoryItemUI : MonoBehaviour
                 }
         }
     }
+
+    public ItemScriptable GetItem()
+    {
+        return item;
+    }
 }

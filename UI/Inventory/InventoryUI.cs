@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public class InventoryUI : MonoBehaviour
@@ -32,16 +33,6 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    public void LoadInventory()
-    {
-        InventoryData data = GameManager.Instance.playerData.inventoryData;
-
-        for (int i = 0; i < data.items.Count; i++)
-        {
-            items[i].SetItem(InventoryManager.Instance.itemDatabase.GetItem(data.items[i]));
-        }
-    }
-
     public void CloseInventory()
     {
         if (inventoryPanel.gameObject.activeInHierarchy)
@@ -63,5 +54,17 @@ public class InventoryUI : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public List<ItemScriptable> GetAllItems()
+    {
+        List<ItemScriptable> allItems = new List<ItemScriptable>();
+        foreach (var item in items)
+        {
+            if (item.GetItem() != null)
+                allItems.Add(item.GetItem());
+        }
+
+        return allItems;
     }
 }

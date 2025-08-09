@@ -16,11 +16,6 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-        inventoryData = GameManager.Instance.playerData.inventoryData;
-    }
-
     public void SetActiveItem(ItemScriptable item)
     {
         if (item != null)
