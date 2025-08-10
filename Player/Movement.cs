@@ -94,7 +94,7 @@ public class Movement : MonoBehaviour
     void SetAnimation()
     {
         float currentSpeed = Mathf.Clamp(navigation.velocity.magnitude, 0f, 1f);
-        //animator.SetFloat("Velocity", currentSpeed);
+        animator.SetFloat("Run", currentSpeed);
 
         if (lastInteractable != null && currentSpeed == 0)
         {
