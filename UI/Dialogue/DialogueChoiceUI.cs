@@ -10,6 +10,8 @@ public class DialogueChoiceUI : MonoBehaviour
 
     public void SetChoice(string choiceText, int index)
     {
+        this.choiceText.fontSize = GameManager.Instance.settingsData.fontSize;
+
         this.choiceText.text = (index + 1).ToString() + ". " + choiceText;
         this.choiceIndex = index;
 

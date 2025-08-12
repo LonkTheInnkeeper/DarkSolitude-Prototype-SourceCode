@@ -8,8 +8,10 @@ public class GameManager : MonoBehaviour
     public Camera activeCamera;
     public GameState gameState;
     public GameObject player;
-    public PlayerData playerData;
     public MouseControl mouseControl;
+
+    public PlayerData playerData;
+    public SettingsData settingsData;
 
     [SerializeField] TextMeshProUGUI gameStateDebug;
 
@@ -29,11 +31,13 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         playerData = new PlayerData();
+        settingsData = new SettingsData();
     }
 
     private void Start()
     {
         activeCamera = Camera.main;
+        settingsData = SaveLoadManager.Instance.LoadSettings();
     }
 
     private void Update()

@@ -8,6 +8,9 @@ public class DialogueTextUI : MonoBehaviour
 
     public void SetText(string text, string name)
     {
+        dialogueText.fontSize = GameManager.Instance.settingsData.fontSize;
+        charName.fontSize = GameManager.Instance.settingsData.fontSize;
+
         dialogueText.text = text;
         charName.text = name;
     }

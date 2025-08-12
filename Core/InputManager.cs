@@ -18,4 +18,9 @@ public class InputManager : MonoBehaviour
     {
         return Input.GetKeyDown(KeyCode.L);
     }
+
+    public bool OpenMenu()
+    {
+        return Input.GetKeyDown(KeyCode.Escape);
+    }
 }
