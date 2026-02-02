@@ -1,15 +1,21 @@
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class EventTrigger : MonoBehaviour, IInteractable
 {
     [SerializeField] List<Transform> interactionPoints;
-    [SerializeField] ItemScriptable item;
+    [SerializeField] ItemScriptable requiredItem;
     [SerializeField] bool removeUsedItem;
     [SerializeField] string eventKey;
+    [SerializeField] int locationIndex;
+
+    [SerializeField] bool eventAvailable = true;
+    [SerializeField] bool disableAfterUse = true;
 
     public UnityEvent eventTrigger;
+    public UnityEvent itemMissingEvent;
 
     public List<Transform> GetInteractionPoints()
     {
@@ -23,11 +29,14 @@ public class EventTrigger : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        if (!eventAvailable) return;
+
         InventoryManager inventoryMan = InventoryManager.Instance;
+        ILocation location = LocationManager.instance.GetLocation(locationIndex);
 
         if (eventKey != string.Empty)
         {
-            if (GameManager.Instance.playerData.HasEventKey(eventKey))
+            if (location.ContainsKey(eventKey))
             {
                 print("This event has already been triggered");
                 return;
@@ -35,28 +44,38 @@ public class EventTrigger : MonoBehaviour, IInteractable
             else
             {
                 print("Adding event key: " + eventKey);
-                GameManager.Instance.playerData.StoreEventKey(eventKey);
+                LocationManager.instance.SaveEventKey(locationIndex, eventKey);
             }
         }
 
-        if (item == null)
+        if (requiredItem == null)
         {
+            if (inventoryMan.activeItem != null)
+            {
+                inventoryMan.inventory.DesellectItem();
+                return;
+            }
+
             print("Using event trigger");
-            eventTrigger.Invoke();
+            EventTriggered();
+
             return;
         }
 
-        if (inventoryMan.activeItem == item)
+        if (inventoryMan.activeItem == requiredItem)
         {
-            print("Using item to trigger: " + item.name);
+            print("Using item to trigger: " + requiredItem.name);
 
             if (removeUsedItem)
             {
-                inventoryMan.inventoryData.items.Remove(item.name);
+                inventoryMan.inventoryData.items.Remove(requiredItem.name);
+            }
+            else
+            {
+                inventoryMan.inventory.DesellectItem();
             }
 
-            inventoryMan.SetActiveItem(null);
-            eventTrigger.Invoke();
+            EventTriggered();
         }
         else
         {
@@ -65,6 +84,35 @@ public class EventTrigger : MonoBehaviour, IInteractable
             {
                 inventoryMan.inventory.DesellectItem();
             }
+
+            itemMissingEvent.Invoke();
         }
+    }
+
+    void EventTriggered()
+    {
+        ILocation location = LocationManager.instance.GetLocation(locationIndex);
+
+        if (eventKey != string.Empty)
+        {
+            if (location.ContainsKey(eventKey))
+            {
+                print("This event has already been triggered");
+                return;
+            }
+            else
+            {
+                print("Adding event key: " + eventKey);
+                LocationManager.instance.SaveEventKey(locationIndex, eventKey);
+            }
+        }
+
+        if (disableAfterUse)
+        {
+            eventAvailable = false;
+            GetComponent<Collider>().enabled = false;
+        }
+
+        eventTrigger.Invoke();
     }
 }

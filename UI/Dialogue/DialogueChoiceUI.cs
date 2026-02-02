@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogueChoiceUI : MonoBehaviour
+public class DialogueChoiceUI : MonoBehaviour, IUITrigger
 {
     [SerializeField] TextMeshProUGUI choiceText;
     Button button;
@@ -22,5 +22,17 @@ public class DialogueChoiceUI : MonoBehaviour
     public void MakeChoice()
     {
         DialogueManager.Instance.dialogue.MakeChoice(choiceIndex);
+    }
+
+    public void Trigger(bool trigger, string name)
+    {
+        if (trigger)
+        {
+            GetComponent<Animator>().SetTrigger("Sellect");
+        }
+        else
+        {
+            GetComponent<Animator>().SetTrigger("Desellect");
+        }
     }
 }

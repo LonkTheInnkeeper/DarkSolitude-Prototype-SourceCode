@@ -20,7 +20,7 @@ public class DiaryUI : MonoBehaviour
         dialogueMan = DialogueManager.Instance;
     }
 
-    public void NewDiary()
+    public void OpenDiary()
     {
         foreach (var item in content)
         {
@@ -34,14 +34,14 @@ public class DiaryUI : MonoBehaviour
 
     public Story PrintDiary(Story currentDiary)
     {
-        NewDiary();
+        OpenDiary();
         List<Choice> choices = new List<Choice>(currentDiary.currentChoices);
 
         string diaryText = currentDiary.currentText;
 
         while (choices.Count == 0)
         {
-            diaryText += currentDiary.Continue() + "\n \n";
+            diaryText += currentDiary.Continue() + "\n";
             choices = new List<Choice>(currentDiary.currentChoices);
         }
 
@@ -64,6 +64,11 @@ public class DiaryUI : MonoBehaviour
 
     public void ExitDiary()
     {
+        if (dialogueMan.exitAnimation != null)
+        {
+            dialogueMan.exitAnimation.TriggerAnimation();
+            dialogueMan.exitAnimation = null;
+        }
         dialogueMan.dialogue.ExitDialogue();
         diaryPanel.gameObject.SetActive(false);
     }

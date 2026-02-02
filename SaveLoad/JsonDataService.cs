@@ -37,6 +37,32 @@ public class JsonDataService : IDataService
         }
     }
 
+    public bool DeleteData<T>(string relativePath, T data)
+    {
+        string path = Application.dataPath + "/" + relativePath;
+
+        try
+        {
+            if (File.Exists(path))
+            {
+                DebugLog("Data exists. Deleting file.");
+                File.Delete(path);
+                return true;
+            }
+            else
+            {
+                DebugLog("File does not exist");
+                return false;
+            }
+        }
+
+        catch (Exception e) 
+        {
+            DebugError($"Unable to delete data due to: {e.Message} {e.StackTrace}");
+            return false;
+        }
+    }
+
     public T LoadData<T>(string relativePath)
     {
         string path = Application.dataPath + "/" + relativePath;

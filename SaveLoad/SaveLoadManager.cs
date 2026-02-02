@@ -6,6 +6,7 @@ public class SaveLoadManager : MonoBehaviour
 
     GameManager gameMan;
     InventoryManager inventoryMan;
+    LocationManager locationMan;
 
     private void Awake()
     {
@@ -24,24 +25,21 @@ public class SaveLoadManager : MonoBehaviour
     {
         gameMan = GameManager.Instance;
         inventoryMan = InventoryManager.Instance;
+        locationMan = LocationManager.instance;
+
+        //LoadPlayerData(SaveLoadSystem.LoadPlayerData(2));
     }
 
-    private void Update()
+    public void SavePlayerData(int index, string fileName)
     {
-        if (InputManager.Instance.SaveGame())
-        {
-            SavePlayerData(gameMan.playerData);
-        }
-        if (InputManager.Instance.LoadGame())
-        {
-            LoadPlayerData();
-        }
-    }
+        PlayerData playerData = gameMan.playerData;
 
-    public void SavePlayerData(PlayerData playerData)
-    {
-        inventoryMan.inventory.SaveInventory();
-        gameMan.player.GetComponent<Player>().SavePosition();
+        playerData.index = index;
+        playerData.UpdateFileDate();
+        playerData.fileName = fileName;
+        LocationManager.instance.SaveLocationData(playerData);
+        gameMan.player.GetComponent<Player>().SavePosition(playerData);
+        //inventoryMan.inventory.SaveInventory(playerData);
 
         SaveLoadSystem.SavePlayerData(playerData);
     }
@@ -51,22 +49,16 @@ public class SaveLoadManager : MonoBehaviour
         SaveLoadSystem.SaveSettingsData(settingsData);
     }
 
-    public void LoadPlayerData()
+    public void LoadPlayerData(PlayerData playerData)
     {
-        PlayerData playerData = new PlayerData();
-
-        if (SaveLoadSystem.CheckPlayerData())
-        {
-            playerData = SaveLoadSystem.LoadPlayerData();
-        }
-        else
-        {
-            SaveLoadSystem.SavePlayerData(playerData);
-        }
+        if (playerData == null) return;
 
         gameMan.playerData = playerData;
-        gameMan.player.GetComponent<Player>().LoadPosition();
-        inventoryMan.inventory.LoadInventory();
+        gameMan.player.GetComponent<Player>().LoadPosition(playerData);
+        locationMan.SetLoactionData(playerData.locations);
+        locationMan.SwitchLocation(playerData.currentLocation);
+
+        //inventoryMan.inventory.LoadInventory();
     }
 
     public SettingsData LoadSettings()

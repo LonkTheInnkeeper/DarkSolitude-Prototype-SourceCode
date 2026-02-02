@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 [CreateAssetMenu(fileName = "Item", menuName = "Scriptable/Item")]
 public class ItemScriptable : ScriptableObject
@@ -13,4 +14,7 @@ public class ItemScriptable : ScriptableObject
     [Header("Combination")]
     public ItemScriptable secondItem;
     public ItemScriptable comboResult;
+
+    [Space]
+    public string comboLine;
 }

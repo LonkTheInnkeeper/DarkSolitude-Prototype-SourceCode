@@ -23,7 +23,8 @@ public class Movement : MonoBehaviour
     {
         SetAnimation();
 
-        if (GameManager.Instance.gameState != GameManager.GameState.Navigation) return;
+        if (GameManager.Instance.gameState != GameManager.GameState.Navigation ||
+            GameManager.Instance.closeupState) return;
 
         CheckInteraction();
     }
@@ -89,6 +90,12 @@ public class Movement : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void ResetInteractable()
+    {
+        interactable = null;
+        lastInteractable = null;
     }
 
     void SetAnimation()

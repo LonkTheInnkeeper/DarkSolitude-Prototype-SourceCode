@@ -8,8 +8,12 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] RectTransform dialoguePanel;
     [SerializeField] RectTransform dialogueContent;
     [SerializeField] RectTransform textPref;
+    [SerializeField] RectTransform playerTextPref;
     [SerializeField] RectTransform choicePref;
     [SerializeField] ScrollRect scrollRect;
+
+    [Space]
+    [SerializeField] Animator animator;
 
     List<RectTransform> content = new List<RectTransform>();
     List<RectTransform> choices = new List<RectTransform>();
@@ -24,20 +28,26 @@ public class DialogueUI : MonoBehaviour
 
     public void NewDialogue()
     {
-        foreach (var item in content)
+        for (int i = dialogueContent.childCount - 1; i >= 0; i--)
         {
-            Destroy(item.gameObject);
+            Destroy(dialogueContent.GetChild(i).gameObject);
         }
 
-        foreach (var item in choices)
-        {
-            Destroy(item.gameObject);
-        }
+        //foreach (var item in content)
+        //{
+        //    Destroy(item.gameObject);
+        //}
+
+        //foreach (var item in choices)
+        //{
+        //    Destroy(item.gameObject);
+        //}
 
         content.Clear();
         choices.Clear();
 
         dialoguePanel.gameObject.SetActive(true);
+        animator.SetTrigger("Open");
     }
 
     public void PrintDialogueText(string text, string choice)
@@ -54,21 +64,23 @@ public class DialogueUI : MonoBehaviour
         if (dialogueMan.activeCharacter != null)
             charName = dialogueMan.activeCharacter.GetName();
 
+        // Add text of the choice to the content
         if (choice != string.Empty)
         {
-            var choiceText = Instantiate(textPref, dialogueContent);
+            var choiceText = Instantiate(playerTextPref, dialogueContent);
             choiceText.GetComponent<DialogueTextUI>().SetText(choice, string.Empty);
 
             content.Add(choiceText);
         }
 
+        // Add next story text
         var dialogueText = Instantiate(textPref, dialogueContent);
-        dialogueText.GetComponent<DialogueTextUI>().SetText(text, name);
+        dialogueText.GetComponent<DialogueTextUI>().SetText(text, charName);
 
         content.Add(dialogueText);
 
         Canvas.ForceUpdateCanvases();
-        scrollRect.verticalNormalizedPosition = 0f;
+        scrollRect.verticalNormalizedPosition = 0;
     }
 
     public void PrintChoices(List<Choice> choices)
@@ -89,10 +101,14 @@ public class DialogueUI : MonoBehaviour
 
         Canvas.ForceUpdateCanvases();
         scrollRect.verticalNormalizedPosition = 0f;
+
+        Canvas.ForceUpdateCanvases();
+        scrollRect.verticalNormalizedPosition = 0f;
     }
 
     public void ExitDialogue()
     {
-        dialoguePanel.gameObject.SetActive(false);
+        animator.SetTrigger("Close");
+        //dialoguePanel.gameObject.SetActive(false);
     }
 }

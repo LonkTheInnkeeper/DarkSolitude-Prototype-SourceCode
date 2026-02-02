@@ -15,8 +15,22 @@ public class MouseControl : MonoBehaviour
     [SerializeField] Color itemColor;
     [SerializeField] Color interactionColor;
 
+    [Header("Cursor icons")]
+    [SerializeField] Texture2D arrow;
+    [SerializeField] Texture2D hand;
+    [SerializeField] Texture2D info;
+
+    public enum CursorType
+    {
+        Arrow,
+        Invetaction,
+        InfoText
+    }
+
     private void Start()
     {
+        Cursor.SetCursor(arrow, Vector2.zero, CursorMode.Auto);
+
         uiMan = UIManager.Instance;
         inventoryMan = InventoryManager.Instance;
         gameMan = GameManager.Instance;
@@ -27,11 +41,39 @@ public class MouseControl : MonoBehaviour
     {
         hit = MouseTools.GetMouseRayHit();
 
-        if (hit.collider == null) return;
+        if (hit.collider == null)
+        {
+            uiMan.infoTextUI.ToggleInfotext(false, -1);
+            SwitchCursor(CursorType.Arrow);
+            return;
+        }
+        else
+        {
+            collider_ = hit.collider;
+        }
 
         if (collider_ == null)
         {
             collider_ = hit.collider;
+        }
+
+        if (collider_.GetComponent<IInteractable>() != null)
+            SwitchCursor(CursorType.Invetaction);
+        else
+            SwitchCursor(CursorType.Arrow);
+
+        if (collider_.GetComponent<InfoText>() != null)
+        {
+            uiMan.infoTextUI.ToggleInfotext(true, collider_.GetComponent<InfoText>().textIndex);
+
+            if (collider_.GetComponent<IInteractable>() == null)
+            {
+                SwitchCursor(CursorType.InfoText);
+            }
+        }
+        else
+        {
+            uiMan.infoTextUI.ToggleInfotext(false, -1);
         }
 
         LeftClick();
@@ -110,5 +152,26 @@ public class MouseControl : MonoBehaviour
     public void SetItemCursor(Texture2D cursor)
     {
         Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
+    }
+
+    public void SwitchCursor(CursorType cursorType)
+    {
+        switch (cursorType)
+        {
+            case CursorType.Arrow:
+                Cursor.SetCursor(arrow, Vector2.zero, CursorMode.Auto);
+                break;
+
+            case CursorType.Invetaction:
+                Cursor.SetCursor(hand, Vector2.zero, CursorMode.Auto);
+                break;
+
+            case CursorType.InfoText:
+                Cursor.SetCursor(info, Vector2.zero, CursorMode.Auto);
+                break;
+
+            default:
+                break;
+        }
     }
 }

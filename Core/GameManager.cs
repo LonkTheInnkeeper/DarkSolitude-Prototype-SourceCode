@@ -13,7 +13,10 @@ public class GameManager : MonoBehaviour
     public PlayerData playerData;
     public SettingsData settingsData;
 
+    [HideInInspector] public bool closeupState;
+
     [SerializeField] TextMeshProUGUI gameStateDebug;
+    [SerializeField] TextMeshProUGUI localDebug;
 
     public enum GameState
     {
@@ -42,11 +45,29 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        gameStateDebug.text = gameState.ToString();
+        gameStateDebug.text = "Game state: " + gameState.ToString();
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            PlayerPrefs.SetString("Localisation", "cz");
+            DialogueManager.Instance.infoTextDatabase.SwitchLocalisation();
+        }
+        else if (Input.GetKeyDown(KeyCode.E)) 
+        {
+            PlayerPrefs.SetString("Localisation", "en");
+            DialogueManager.Instance.infoTextDatabase.SwitchLocalisation();
+        }
+
+        localDebug.text = "Localisation: " + PlayerPrefs.GetString("Localisation");
     }
 
     public void SwitchGameState(GameState state)
     {
         gameState = state;
+    }
+
+    public void CloseupState(bool state)
+    {
+        closeupState = state;
     }
 }

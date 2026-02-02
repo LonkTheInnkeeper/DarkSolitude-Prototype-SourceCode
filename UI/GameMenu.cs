@@ -75,10 +75,10 @@ public class GameMenu : MonoBehaviour
     {
         if (GameManager.Instance.gameState != GameManager.GameState.Menu) return;
 
-        fontSize.text = settingsData.fontSize.ToString();
+        //fontSize.text = settingsData.fontSize.ToString();
 
-        settingsData.effects = effectsSlider.value;
-        settingsData.voice = voiceSlider.value;
+        //settingsData.effects = effectsSlider.value;
+        //settingsData.voice = voiceSlider.value;
     }
 
     public void IncreaseFont(bool increase)

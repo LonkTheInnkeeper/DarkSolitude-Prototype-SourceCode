@@ -3,6 +3,8 @@ using UnityEngine;
 public class Occlusion : MonoBehaviour
 {
     [SerializeField] Transform occlusionPoint;
+    [SerializeField] Color occlusionColor;
+    [SerializeField] Color baseColor;
 
     SpriteRenderer occlusionSprite;
     Transform player;
@@ -22,11 +24,11 @@ public class Occlusion : MonoBehaviour
     {
         if (occlusionPoint.position.z < player.position.z) 
         {
-            occlusionSprite.enabled = true;
+            occlusionSprite.color = baseColor;
         }
         else
         {
-            occlusionSprite.enabled = false;
+            occlusionSprite.color = occlusionColor;
         }
     }
 }

@@ -10,10 +10,13 @@ public static class SaveLoadSystem
     static bool debugError = true;
 
     static string basePath = "GameData/Player/";
+    static string infoTextPath = "GameData/InfoText/";
 
     static string gameSettingsPath = basePath + "SettingsData.json";
     static string playerDataPath = basePath + "PlayerData.json";
     static string inventoryPath = basePath + "InventoryData.json";
+
+    static int saveSlots = 5;
 
     // === SAVE ===
 
@@ -34,8 +37,9 @@ public static class SaveLoadSystem
     {
         DebugLog("Saving Player Data");
 
-        if (dataService.SaveData(playerDataPath, playerData))
+        if (dataService.SaveData(basePath + "PlayerData" + playerData.index.ToString() + ".json", playerData))
         {
+            MakeScreenshot("PlayerData" +  playerData.index);
             return;
         }
         else
@@ -58,6 +62,23 @@ public static class SaveLoadSystem
         }
     }
 
+    // === DELETE ===
+
+    public static bool DeletePlayerData(PlayerData playerData, Sprite screenshot)
+    {
+        DebugLog("Deleting Player Data");
+
+        if (dataService.DeleteData(basePath + "PlayerData" + playerData.index.ToString() + ".json", playerData))
+        {
+            dataService.DeleteData(basePath + "PlayerData" + playerData.index.ToString() + ".png", screenshot);
+            return true;
+        }
+        else
+        {
+            DebugError("Could not delete Player Data");
+            return false;
+        }
+    }
 
     // === LOAD ===
 
@@ -80,9 +101,9 @@ public static class SaveLoadSystem
         };
     }
 
-    public static PlayerData LoadPlayerData()
+    public static PlayerData LoadPlayerData(int index)
     {
-        string path = playerDataPath;
+        string path = basePath + "PlayerData" + index.ToString() + ".json";
 
         DebugLog("Loading Player Data");
 
@@ -90,6 +111,7 @@ public static class SaveLoadSystem
         {
             PlayerData playerData = new PlayerData();
             playerData = dataService.LoadData<PlayerData>(path);
+
             return playerData;
         }
         else
@@ -97,6 +119,23 @@ public static class SaveLoadSystem
             DebugLog("File Player Data does not exist");
             return null;
         };
+    }
+
+    public static List<PlayerData> GetAllPlayerData()
+    {
+        List<PlayerData> playerDataList = new List<PlayerData>();
+
+        for (int i = 0; i < saveSlots; i++)
+        {
+            PlayerData playerData = LoadPlayerData(i);
+
+            if (playerData == null)
+                continue;
+            else
+                playerDataList.Add(playerData);
+        }
+
+        return playerDataList;
     }
 
     public static InventoryData LoadInventory()
@@ -116,6 +155,25 @@ public static class SaveLoadSystem
             DebugLog("File Inventory does not exist");
             return null;
         };
+    }
+
+    public static InfoTextData LoadInfoText(string localisation)
+    {
+        string path = infoTextPath + localisation + ".json";
+
+        DebugLog("Loading InfoText");
+
+        if (File.Exists(Application.dataPath + "/" + path))
+        {
+            InfoTextData infoText = new InfoTextData();
+            infoText = dataService.LoadData<InfoTextData>(path);
+            return infoText;
+        }
+        else
+        {
+            DebugLog("File InfoText does not exist");
+            return null;
+        }
     }
 
 
@@ -164,6 +222,69 @@ public static class SaveLoadSystem
         {
             DebugError("Could not save file");
         }
+    }
+
+    public static void MakeScreenshot(string name)
+    {
+        Camera captureCam = Camera.main;
+
+        // Image size
+        int width = 854;
+        int height = 480;
+
+        // Create folder
+        string folderPath = Application.dataPath + "/" + basePath;
+
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+            Debug.Log("Creating folder");
+        }
+
+        // Create RenderTexture
+        RenderTexture rt = new RenderTexture(width, height, 24);
+        captureCam.targetTexture = rt;
+
+        // Render
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        captureCam.Render();
+        RenderTexture.active = rt;
+        tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        tex.Apply();
+
+        // Save PNG
+        byte[] bytes = tex.EncodeToPNG();
+        string fullPath = Path.Combine(folderPath, name + ".png");
+        File.WriteAllBytes(fullPath, bytes);
+
+        // Reset
+        captureCam.targetTexture = null;
+        RenderTexture.active = null;
+
+        Debug.Log("Screenshot " + name + " saved");
+    }
+
+    public static Sprite LoadScreenshot(string name)
+    {
+        string filePath = Application.dataPath + "/" + basePath + name + ".png";
+
+        if (!File.Exists(filePath)) 
+        {
+            Debug.LogWarning("File " + name + " does not exist");
+            return null;
+        }
+
+        byte[] fileData = File.ReadAllBytes(filePath);
+        Texture2D tex = new Texture2D(2, 2);
+        tex.LoadImage(fileData);
+
+        Sprite sprite = Sprite.Create(
+            tex,
+            new Rect(0, 0, tex.width, tex.height),
+            new Vector2(0.5f, 0.5f),
+            100f);
+
+        return sprite;
     }
 
     static void DebugLog(string msg)

@@ -45,7 +45,7 @@ public class Dialogue : MonoBehaviour
 
         if (diary)
         {
-            uiMan.diaryUI.NewDiary();
+            uiMan.diaryUI.OpenDiary();
         }
         else
         {

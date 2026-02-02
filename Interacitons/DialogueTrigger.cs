@@ -8,5 +8,12 @@ public class DialogueTrigger : MonoBehaviour
     public void TriggerDialogue()
     {
         DialogueManager.Instance.dialogue.EnterDialogueMode(textAsset.name, diary);
+
+        SwitchAnimation switchAnimation = GetComponent<SwitchAnimation>();
+
+        if (switchAnimation != null) 
+        {
+            DialogueManager.Instance.exitAnimation = switchAnimation;
+        }
     }
 }

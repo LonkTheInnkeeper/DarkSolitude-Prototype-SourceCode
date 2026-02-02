@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Ink.Runtime;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class DialogueManager : MonoBehaviour
@@ -17,7 +15,10 @@ public class DialogueManager : MonoBehaviour
     public Dialogue dialogue;
     public DialogueDatabase dialogueDatabase;
     public DiaryDatabase diaryDatabase;
+    public InfoTextDatabase infoTextDatabase;
     public DialogueEventHandler events;
+
+    public SwitchAnimation exitAnimation;
 
     private void Awake()
     {

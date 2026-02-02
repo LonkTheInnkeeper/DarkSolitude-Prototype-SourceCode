@@ -3,6 +3,9 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance;
+    public Texture2D cursorArrow;
+    public Texture2D cursorHand;
+
 
     private void Awake()
     {
@@ -22,5 +25,10 @@ public class InputManager : MonoBehaviour
     public bool OpenMenu()
     {
         return Input.GetKeyDown(KeyCode.Escape);
+    }
+
+    public bool RightClick()
+    {
+        return Input.GetMouseButtonDown(1);
     }
 }

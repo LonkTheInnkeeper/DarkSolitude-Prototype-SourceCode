@@ -1,11 +1,16 @@
 
+using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 
 public class PlayerData
 {
+    public int index;
+    public string fileName = "Empty name";
+    public string fileDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+
     public List<string> inventory = new List<string>();
-    public List<string> eventKeys = new List<string>();
+    public List<LocationData> locations = new List<LocationData>();
 
     public int currentLocation = 0;
 
@@ -22,16 +27,6 @@ public class PlayerData
         inventory = new List<string>(items);
     }
 
-    public bool HasEventKey(string key)
-    {
-        return eventKeys.Contains(key);
-    }
-
-    public void StoreEventKey(string key) 
-    {
-        eventKeys.Add(key);
-    }
-
     public void SetCurrentLocation(int location)
     {
         this.currentLocation = location;
@@ -46,5 +41,15 @@ public class PlayerData
     public float2 GetPosition()
     {
         return new float2(positionX, positionZ);
+    }
+
+    public void UpdateFileDate()
+    {
+        fileDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+    }
+
+    public void SaveLocations(List<LocationData> locations)
+    {
+        this.locations = new List<LocationData>(locations);
     }
 }

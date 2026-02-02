@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using static UnityEditor.Progress;
 
 public class Inventory : MonoBehaviour
@@ -8,6 +9,13 @@ public class Inventory : MonoBehaviour
     [SerializeField] bool debugMessage = true;
 
     [SerializeField] TextMeshProUGUI activeItem;
+
+    [Space]
+    [SerializeField] AudioSource itemsAudio;
+    [SerializeField] AudioSource panelAudio;
+
+    [Space]
+    [SerializeField] List<ItemScriptable> debugItems;
 
     InventoryManager inventoryMan;
     ItemDatabase database;
@@ -20,6 +28,8 @@ public class Inventory : MonoBehaviour
         database = inventoryMan.itemDatabase;
         gameMan = GameManager.Instance;
         uiMan = UIManager.Instance;
+
+        AddDebugItems();
     }
 
     private void Update()
@@ -28,6 +38,14 @@ public class Inventory : MonoBehaviour
             activeItem.text = "Active item: " + inventoryMan.activeItem.itemName;
         else
             activeItem.text = "No active item";
+    }
+
+    void AddDebugItems()
+    {
+        foreach (var item in debugItems)
+        {
+            AddItem(item);
+        }
     }
 
     public void AddItem(ItemScriptable item)
@@ -63,6 +81,7 @@ public class Inventory : MonoBehaviour
         if (secondItem == inventoryMan.activeItem.secondItem)
         {
             print("Combining items");
+            uiMan.infoTextUI.TriggerVoicelineDelayed(secondItem.comboResult.comboLine, 3f);
             return secondItem.comboResult;
         }
         else
@@ -78,6 +97,10 @@ public class Inventory : MonoBehaviour
 
         inventoryMan.SetActiveItem(item);
         gameMan.SwitchGameState(GameManager.GameState.ItemHandling);
+
+        AudioManager audioMan = AudioManager.Instance;
+        itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
+        itemsAudio.Play();
     }
 
     public void DesellectItem()
@@ -86,6 +109,7 @@ public class Inventory : MonoBehaviour
         ReturnItem();
         uiMan.inventoryUI.CloseInventory();
         gameMan.SwitchGameState(GameManager.GameState.Navigation);
+
     }
 
     public void ReturnItem()
@@ -93,12 +117,19 @@ public class Inventory : MonoBehaviour
         if (inventoryMan.activeItem != null)
         {
             inventoryMan.SetActiveItem(null);
+
+            AudioManager audioMan = AudioManager.Instance;
+            itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
+            itemsAudio.Play();
         }
     }
 
     public bool CheckItemInInventory(string itemName)
     {
-        return inventoryMan.inventoryData.CheckItem(itemName);
+        if (inventoryMan.inventoryData == null)
+            return false;
+        else
+            return inventoryMan.inventoryData.CheckItem(itemName);
     }
 
     public void LoadInventory()
@@ -111,7 +142,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void SaveInventory()
+    public void SaveInventory(PlayerData playerData)
     {
         List<string> items = new List<string>();
 
@@ -120,7 +151,7 @@ public class Inventory : MonoBehaviour
             items.Add(item.itemName);
         }
 
-        gameMan.playerData.SaveItems(items);
+        playerData.SaveItems(items);
     }
 
     void DebugMessage(string message)

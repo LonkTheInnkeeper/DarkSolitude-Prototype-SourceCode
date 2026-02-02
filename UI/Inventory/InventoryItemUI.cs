@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemUI : MonoBehaviour
+public class InventoryItemUI : MonoBehaviour, IUITrigger
 {
     ItemScriptable item;
-    Image icon;
+    [SerializeField] Image icon;
     [SerializeField] Sprite defaultIcon;
 
     InventoryManager inventoryMan;
@@ -18,8 +18,6 @@ public class InventoryItemUI : MonoBehaviour
 
     public void SetItem(ItemScriptable item)
     {
-        icon = GetComponent<Image>();
-
         if (item == null)
         {
             this.item = null;
@@ -86,5 +84,17 @@ public class InventoryItemUI : MonoBehaviour
     public ItemScriptable GetItem()
     {
         return item;
+    }
+
+    public void Trigger(bool trigger, string name)
+    {
+        if (trigger)
+        {
+            GetComponent<Animator>().SetTrigger("Sellect");
+        }
+        else
+        {
+            GetComponent<Animator>().SetTrigger("Desellect");
+        }
     }
 }
