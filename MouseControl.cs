@@ -96,12 +96,11 @@ public class MouseControl : MonoBehaviour
             if (gameMan.gameState == GameManager.GameState.Inventory ||
                 gameMan.gameState == GameManager.GameState.ItemHandling)
             {
-                inventoryMan.inventory.DesellectItem();
-                uiMan.inventoryUI.CloseInventory();
+                inventoryMan.inventory.ReturnActiveItem();
+                uiMan.inventoryUI.ToggleInventory();
             }
         }
     }
-
 
     private void UseItem()
     {
@@ -111,23 +110,16 @@ public class MouseControl : MonoBehaviour
 
         if (interactable != null)
         {
-            gameMan.SwitchGameState(GameManager.GameState.Navigation);
+            uiMan.inventoryUI.ToggleInventory();
             playerMovement.SetInteractable(interactable);
-            uiMan.inventoryUI.CloseInventory();
         }
     }
 
     private void Navigation()
     {
-        if (gameMan.gameState != GameManager.GameState.Navigation) return;
-
-        if (playerMovement == null)
-            playerMovement = gameMan.player.GetComponent<Movement>();
-
-        if (inventoryMan.activeItem != null)
-        {
-            inventoryMan.inventory.ReturnItem();
-        }
+        if (gameMan.gameState != GameManager.GameState.Navigation &&
+            gameMan.gameState != GameManager.GameState.Closeup)
+            return;
 
         IInteractable interactable = hit.collider.gameObject.GetComponent<IInteractable>();
 
@@ -136,7 +128,18 @@ public class MouseControl : MonoBehaviour
             print("Setting interactable " + interactable);
             playerMovement.SetInteractable(interactable);
         }
-        else
+
+        if (gameMan.gameState != GameManager.GameState.Navigation) return;
+
+        if (playerMovement == null)
+            playerMovement = gameMan.player.GetComponent<Movement>();
+
+        if (inventoryMan.activeItem != null)
+        {
+            inventoryMan.inventory.ReturnActiveItem();
+        }
+
+        if (interactable == null)
         {
             Vector3 target = MouseTools.GetMouseRayHit().point;
             print("Setting destination " + target);

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -6,27 +7,29 @@ public class InventoryManager : MonoBehaviour
 
     public Inventory inventory;
     public ItemDatabase itemDatabase;
-
-    public InventoryData inventoryData;
-
     public ItemScriptable activeItem;
+    public int inventorySize;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    public void SetActiveItem(ItemScriptable item)
+    private void Start()
     {
-        if (item != null)
+    }
+
+    public void SetActiveItem(string itemName)
+    {
+        if (itemName != null)
         {
-            GameManager.Instance.mouseControl.SetItemCursor(item.cursorIcon);
+            activeItem = itemDatabase.GetItem(itemName);
+            GameManager.Instance.mouseControl.SetItemCursor(activeItem.cursorIcon);
         }
         else
         {
+            activeItem = null;
             GameManager.Instance.mouseControl.SetDefaultCursor();
         }
-
-        activeItem = item;
     }
 }

@@ -31,6 +31,10 @@ public class SaveLoadUI : MonoBehaviour
 
     public void ToggleSaveLoad()
     {
+        if (GameManager.Instance.gameState != GameManager.GameState.Navigation &&
+            GameManager.Instance.gameState != GameManager.GameState.Menu)
+            return;
+
         animator.gameObject.SetActive(true);
 
         if (toggled)
@@ -64,7 +68,9 @@ public class SaveLoadUI : MonoBehaviour
 
     public void FillSlots()
     {
-        List<PlayerData> playerDataList = SaveLoadSystem.GetAllPlayerData();
+        List<GameData> gameDataList = SaveLoadSystem.GetAllGameData();
+
+        print("Data list count " +  gameDataList.Count);
 
         foreach (var slot in slots)
         {
@@ -73,11 +79,11 @@ public class SaveLoadUI : MonoBehaviour
 
         for (int i = 0; i < slots.Count; i++)
         {
-            foreach (PlayerData playerData in playerDataList)
+            foreach (GameData gameData in gameDataList)
             {
-                if (playerData.index == slots[i].index)
+                if (gameData.index == slots[i].index)
                 {
-                    Sprite sprite = SaveLoadSystem.LoadScreenshot("PlayerData" + playerData.index);
+                    Sprite sprite = SaveLoadSystem.LoadScreenshot("GameData" + gameData.index);
 
                     if (sprite == null)
                     {
@@ -85,7 +91,7 @@ public class SaveLoadUI : MonoBehaviour
                         Debug.LogWarning("Screenshot not found. Swithing to default");
                     }
 
-                    slots[i].SetSlot(playerData, sprite);
+                    slots[i].SetSlot(gameData, sprite);
                 }
                 else
                     continue;
@@ -107,15 +113,15 @@ public class SaveLoadUI : MonoBehaviour
     {
         //SaveLoadManager.Instance.LoadPlayerData(activeSlot.playerData);
 
-        UIManager.Instance.locationShade.StartLoadig(activeSlot.playerData);
+        UIManager.Instance.locationShade.StartLoadig(activeSlot.gameData);
         ToggleSaveLoad();
     }
 
     public void DeleteData()
     {
-        if (activeSlot.playerData == null) return;
+        if (activeSlot.gameData == null) return;
 
-        if (SaveLoadSystem.DeletePlayerData(activeSlot.playerData, activeSlot.screenshot))
+        if (SaveLoadSystem.DeleteGameData(activeSlot.gameData, activeSlot.screenshot))
         {
             activeSlot.SetSlot(null, defaultSprite);
             activeSlot = null;
@@ -151,14 +157,14 @@ public class SaveLoadUI : MonoBehaviour
             loadButton.interactable = false;
             deleteButton.interactable = false;
         }
-        else if (activeSlot != null && activeSlot.playerData == null)
+        else if (activeSlot != null && activeSlot.gameData == null)
         {
             saveButton.interactable = true;
             overWriteButton.interactable = false;
             loadButton.interactable = false;
             deleteButton.interactable = false;
         }
-        else if (activeSlot != null && activeSlot.playerData != null)
+        else if (activeSlot != null && activeSlot.gameData != null)
         {
             saveButton.interactable = false;
             overWriteButton.interactable = true;

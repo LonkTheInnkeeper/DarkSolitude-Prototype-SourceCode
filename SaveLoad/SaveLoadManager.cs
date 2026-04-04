@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SaveLoadManager : MonoBehaviour
@@ -7,6 +9,8 @@ public class SaveLoadManager : MonoBehaviour
     GameManager gameMan;
     InventoryManager inventoryMan;
     LocationManager locationMan;
+
+    List<ISavable> savables = new List<ISavable>();
 
     private void Awake()
     {
@@ -19,29 +23,32 @@ public class SaveLoadManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        savables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+        .OfType<ISavable>()
+        .ToList();
     }
 
     private void Start()
     {
         gameMan = GameManager.Instance;
         inventoryMan = InventoryManager.Instance;
-        locationMan = LocationManager.instance;
+        locationMan = LocationManager.Instance;
 
         //LoadPlayerData(SaveLoadSystem.LoadPlayerData(2));
     }
 
     public void SavePlayerData(int index, string fileName)
     {
-        PlayerData playerData = gameMan.playerData;
+        GameData gameData = gameMan.gameData;
 
-        playerData.index = index;
-        playerData.UpdateFileDate();
-        playerData.fileName = fileName;
-        LocationManager.instance.SaveLocationData(playerData);
-        gameMan.player.GetComponent<Player>().SavePosition(playerData);
+        gameData.index = index;
+        gameData.UpdateFileDate();
+        gameData.fileName = fileName;
+        gameMan.player.GetComponent<Player>().SavePosition(gameData);
         //inventoryMan.inventory.SaveInventory(playerData);
 
-        SaveLoadSystem.SavePlayerData(playerData);
+        SaveLoadSystem.SavePlayerData(gameData);
     }
 
     public void SaveSettings(SettingsData settingsData)
@@ -49,15 +56,18 @@ public class SaveLoadManager : MonoBehaviour
         SaveLoadSystem.SaveSettingsData(settingsData);
     }
 
-    public void LoadPlayerData(PlayerData playerData)
+    public void LoadGameData(GameData gameData)
     {
-        if (playerData == null) return;
+        if (gameData == null) return;
 
-        gameMan.playerData = playerData;
-        gameMan.player.GetComponent<Player>().LoadPosition(playerData);
-        locationMan.SetLoactionData(playerData.locations);
-        locationMan.SwitchLocation(playerData.currentLocation);
+        gameMan.gameData = gameData;
+        gameMan.player.GetComponent<Player>().LoadPosition(gameData);
+        locationMan.SwitchLocation(gameData.areaData.currentLocationID);
 
+        foreach (var savable in savables)
+        {
+            savable.ApplyState();
+        }
         //inventoryMan.inventory.LoadInventory();
     }
 

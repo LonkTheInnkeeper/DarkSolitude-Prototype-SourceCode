@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class SaveLoadSlot : MonoBehaviour
 {
     public int index;
-    public PlayerData playerData;
+    public GameData gameData;
     public Sprite screenshot;
 
     [Space]
@@ -13,13 +13,13 @@ public class SaveLoadSlot : MonoBehaviour
     [SerializeField] TextMeshProUGUI fileDate;
     [SerializeField] Image screenshotImage;
 
-    public void SetSlot(PlayerData playerData, Sprite screenshot)
+    public void SetSlot(GameData gameData, Sprite screenshot)
     {
-        Debug.Log("Player data loaded to slot " + index);
+        Debug.Log("Game data loaded to slot " + index);
 
-        if (playerData == null) 
+        if (gameData == null) 
         {
-            this.playerData = null;
+            this.gameData = null;
             fileName.text = "Empty file";
             fileDate.text = string.Empty;
             this.screenshot = screenshot;
@@ -27,9 +27,9 @@ public class SaveLoadSlot : MonoBehaviour
             return;
         }
 
-        this.playerData = playerData;
-        fileName.text = playerData.fileName;
-        fileDate.text = playerData.fileDate;
+        this.gameData = gameData;
+        fileName.text = gameData.fileName;
+        fileDate.text = gameData.fileDate;
         screenshotImage.sprite = screenshot;
     }
 }

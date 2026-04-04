@@ -25,11 +25,14 @@ public class InventoryUI : MonoBehaviour, IUITrigger
 
     private void Update()
     {
+        // Inventory UI panel collapsing
         float distance = Vector2.Distance(inventoryPanel.localPosition, UIManager.Instance.mousePoint.localPosition);
 
-        if (gameMan.gameState == GameManager.GameState.Inventory && (distance > collapseDistance || InputManager.Instance.RightClick()))
+        if (gameMan.gameState == GameManager.GameState.Inventory &&
+           (distance > collapseDistance || InputManager.Instance.RightClick()))
             ToggleInventory();
 
+        // Active item UI handling
         if (inventoryMan.activeItem != null)
         {
             activeItemUI.SetActive(true);
@@ -44,55 +47,42 @@ public class InventoryUI : MonoBehaviour, IUITrigger
 
     public void ToggleInventory()
     {
-        if (gameMan.gameState == GameManager.GameState.Navigation)
+        if (gameMan.gameState == GameManager.GameState.Navigation ||
+            gameMan.gameState == GameManager.GameState.Closeup)
         {
+            FillInventorySlots();
+
             gameMan.SwitchGameState(GameManager.GameState.Inventory);
             inventoryPanel.gameObject.SetActive(true);
             animator.SetTrigger("Open");
         }
-        else if (gameMan.gameState == GameManager.GameState.Inventory)
+        else if (gameMan.gameState == GameManager.GameState.Inventory ||
+                 gameMan.gameState == GameManager.GameState.ItemHandling ||
+                 gameMan.gameState == GameManager.GameState.Closeup)
         {
-            gameMan.SwitchGameState(GameManager.GameState.Navigation);
+            if (!gameMan.closeupState)
+                gameMan.SwitchGameState(GameManager.GameState.Navigation);
+            else
+                gameMan.SwitchGameState(GameManager.GameState.Closeup);
+
             animator.SetTrigger("Close");
         }
     }
 
-    public void CloseInventory()
+    void FillInventorySlots()
     {
-        if (inventoryPanel.gameObject.activeInHierarchy)
-            inventoryPanel.gameObject.SetActive(false);
+        InventoryData inventoryData = GameManager.Instance.gameData.inventoryData;
 
-        if (gameMan.gameState == GameManager.GameState.Inventory)
+        foreach (var itemSlot in items)
         {
-            gameMan.SwitchGameState(GameManager.GameState.Navigation);
-        }
-    }
-
-    public void AddItem(ItemScriptable item)
-    {
-        foreach (var itemUI in items)
-        {
-            if (itemUI.IsEmpty())
+            if (inventoryData.TryGetItem(itemSlot.slotIndex, out var item))
             {
-                itemUI.SetItem(item);
-                break;
+                itemSlot.SetItem(inventoryMan.itemDatabase.GetItem(item.Value));
             }
         }
     }
 
-    public List<ItemScriptable> GetAllItems()
-    {
-        List<ItemScriptable> allItems = new List<ItemScriptable>();
-        foreach (var item in items)
-        {
-            if (item.GetItem() != null)
-                allItems.Add(item.GetItem());
-        }
-
-        return allItems;
-    }
-
-    public void Trigger(bool trigger, string name)
+    public void UIAnimationTrigger(bool trigger, string name)
     {
         //if (!trigger && gameMan.gameState == GameManager.GameState.Inventory)
         //{

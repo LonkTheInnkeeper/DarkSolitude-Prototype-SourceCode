@@ -1,50 +1,46 @@
+using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Hallway2 : MonoBehaviour, ILocation
 {
     public List<Item> items;
 
-    [SerializeField] int index;
-    LocationData locationData;
+    [SerializeField] string id;
+    AreaData locationData;
 
     [SerializeField] LightFlicker posterFlicker;
     [SerializeField] SpriteRenderer posterRenderer;
     [SerializeField] Sprite posterOff;
 
-    public bool ContainsKey(string key)
+    void ApplyState()
     {
-        return locationData.data.Contains(key);
+
     }
 
-    public void AddKey(string key)
+    public string GetID()
     {
-        locationData.data.Add(key);
+        return id;
     }
 
-    public LocationData GetData()
+#if UNITY_EDITOR
+    private void OnValidate()
     {
-        return locationData;
+        if (string.IsNullOrEmpty(id))
+        {
+            id = Guid.NewGuid().ToString();
+        }
     }
-
-    public int GetIndex()
-    {
-        return index;
-    }
-
-    public void SetData(LocationData data)
-    {
-        if (data == null)
-            locationData = new LocationData(index);
-        else
-            locationData = data;
-    }
+#endif
 
     public void ScewdriverPickup()
     {
         posterFlicker.flickering = false;
         posterRenderer.sprite = posterOff;
+    }
+
+    private void OnEnable()
+    {
+        ApplyState();
     }
 }

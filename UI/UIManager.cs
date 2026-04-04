@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -11,8 +12,16 @@ public class UIManager : MonoBehaviour
     public LocationShade locationShade;
     public RectTransform mousePoint;
 
+    [Space]
+    public GameObject closeupUI;
+
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Update()
+    {
+        closeupUI.SetActive(GameManager.Instance.gameState == GameManager.GameState.Closeup);
     }
 }

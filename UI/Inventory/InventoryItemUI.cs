@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class InventoryItemUI : MonoBehaviour, IUITrigger
 {
     ItemScriptable item;
+    public int slotIndex;
     [SerializeField] Image icon;
     [SerializeField] Sprite defaultIcon;
 
@@ -42,7 +43,7 @@ public class InventoryItemUI : MonoBehaviour, IUITrigger
                 {
                     if (item == null) return;
 
-                    inventoryMan.inventory.SelectItem(item);
+                    inventoryMan.inventory.SelectItem(slotIndex);
                     SetItem(null);
 
                     break;
@@ -50,24 +51,22 @@ public class InventoryItemUI : MonoBehaviour, IUITrigger
 
             case GameManager.GameState.ItemHandling:
                 {
-                    if (item != null)
+                    // Combine items
+                    if (item != null && inventoryMan.activeItem != null)
                     {
-                        if (inventoryMan.activeItem != null)
+                        if (inventoryMan.inventory.TryCombineItems(slotIndex, out var comboItem))
                         {
-                            ItemScriptable comboItem = inventoryMan.inventory.CombineItems(item);
-                            if (comboItem != null)
-                            {
-                                inventoryMan.SetActiveItem(null);
-                                SetItem(comboItem);
-                                gameMan.SwitchGameState(GameManager.GameState.Inventory);
-                            }
+                            SetItem(comboItem);
+                            GameManager.Instance.gameData.inventoryData.items[slotIndex] = comboItem.itemName;
+                            gameMan.SwitchGameState(GameManager.GameState.Inventory);
                         }
-
                         return;
                     }
 
+                    // Place item
                     SetItem(inventoryMan.activeItem);
-                    inventoryMan.inventory.ReturnItem();
+                    GameManager.Instance.gameData.inventoryData.items[slotIndex] = inventoryMan.activeItem.itemName;
+                    inventoryMan.inventory.RemoveActiveItem();
                     gameMan.SwitchGameState(GameManager.GameState.Inventory);
 
                     break;
@@ -86,7 +85,7 @@ public class InventoryItemUI : MonoBehaviour, IUITrigger
         return item;
     }
 
-    public void Trigger(bool trigger, string name)
+    public void UIAnimationTrigger(bool trigger, string name)
     {
         if (trigger)
         {

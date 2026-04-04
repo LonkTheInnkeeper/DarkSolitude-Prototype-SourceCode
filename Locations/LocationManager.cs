@@ -4,82 +4,69 @@ using UnityEngine;
 
 public class LocationManager : MonoBehaviour
 {
-    public static LocationManager instance;
+    public static LocationManager Instance;
 
     [SerializeField] List<GameObject> locations;
-    List<ILocation> iLocations;
 
-    public bool debugLocation;
-    public int debugLocationIndex;
+    [Space]
+    [SerializeField] GameObject cameras;
+
+    GameManager gameMan;
 
     private void Awake()
     {
-        instance = this;
+        Instance = this;
     }
 
     private void Start()
     {
-        iLocations = GrabInterfaces();
+        gameMan = GameManager.Instance;
 
-    }
-
-    List<ILocation> GrabInterfaces()
-    {
-        List<ILocation> interfaces = new List<ILocation>();
-
-        foreach (var gObject in locations)
+        foreach (var location in locations)
         {
-            interfaces.Add(gObject.GetComponent<ILocation>());
-        }
-
-        return interfaces;
-    }
-
-    public void SetLoactionData(List<LocationData> data)
-    {
-        foreach (var iLocation in iLocations)
-        {
-            LocationData locationData = data.FirstOrDefault(item => item.index == iLocation.GetIndex());
-
-            if (locationData != null)
-                iLocation.SetData(locationData);
-            else
-                iLocation.SetData(new LocationData(iLocation.GetIndex()));
+            if (location.gameObject.activeInHierarchy)
+            {
+                gameMan.gameData.areaData.currentLocationID = location.GetComponent<ILocation>().GetID();
+                return;
+            }
         }
     }
 
-    public ILocation GetLocation(int index)
-    {
-        return iLocations.FirstOrDefault(item => item.GetIndex() == index);
-    }
-
-    public void SwitchLocation(int index)
+    public void SwitchLocation(string id)
     {
         foreach (var location in locations)
         {
-            if (location.activeInHierarchy)
-            {
-                location.SetActive(false);
-
-            }
-
-            if (location.GetComponent<ILocation>().GetIndex() == index)
-            {
-                location.SetActive(true);
-                GameManager.Instance.playerData.currentLocation = index;
-            }
+            bool isTarget = location.GetComponent<ILocation>().GetID() == id;
+            location.SetActive(isTarget);
         }
+
+        gameMan.gameData.areaData.currentLocationID = id;
     }
 
-    public void ToggleLocation(bool toggle, int index)
+    public void SwitchLocation(Doors doors)
     {
-        print("Toggling location " + index);
+        Movement playerMovement = gameMan.player.GetComponent<Movement>();
 
-        GameObject location = locations.FirstOrDefault(item => item.GetComponent<ILocation>().GetIndex() == index);
+        string targetLocationId = doors.targetLocation.GetComponent<ILocation>().GetID();
+        gameMan.gameData.areaData.currentLocationID = targetLocationId;
+        SwitchLocation(targetLocationId);
+
+        playerMovement.WarpTo(doors.targetDoors.spawnPoint.position);
+        playerMovement.SetDestination(doors.targetDoors.spawnPoint.position);
+        playerMovement.transform.rotation = doors.targetDoors.spawnPoint.rotation;
+
+        doors.targetDoors.ToggleDoorsAnimation(false);
+    }
+
+    public void ToggleLocation(bool toggle, string id)
+    {
+        print("Toggling location " + id);
+
+        GameObject location = locations.FirstOrDefault(item => item.GetComponent<ILocation>().GetID() == id);
 
         if (location != null)
         {
-            print("Location " + index + " toggle " + toggle);
+            print("Location " + id + " toggle " + toggle);
             location.SetActive(toggle);
         }
         else
@@ -88,27 +75,8 @@ public class LocationManager : MonoBehaviour
         }
     }
 
-    public void SaveLocationData(PlayerData playerData)
+    public void StartCloseup()
     {
-        List<LocationData> data = new List<LocationData>();
 
-        foreach (var location in iLocations)
-        {
-            data.Add(location.GetData());
-        }
-
-        playerData.SaveLocations(data);
-    }
-
-    public void SaveEventKey(int index, string key)
-    {
-        foreach (var iLocation in iLocations)
-        {
-            if (iLocation.GetIndex() == index)
-            {
-                iLocation.AddKey(key);
-                break;
-            }
-        }
     }
 }

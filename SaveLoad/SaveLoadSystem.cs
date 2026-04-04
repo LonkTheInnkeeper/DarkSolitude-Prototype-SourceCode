@@ -9,11 +9,11 @@ public static class SaveLoadSystem
     static bool debugLog = true;
     static bool debugError = true;
 
-    static string basePath = "GameData/Player/";
+    static string basePath = "GameData/";
     static string infoTextPath = "GameData/InfoText/";
 
     static string gameSettingsPath = basePath + "SettingsData.json";
-    static string playerDataPath = basePath + "PlayerData.json";
+    static string GameDataPath = basePath + "GameData.json";
     static string inventoryPath = basePath + "InventoryData.json";
 
     static int saveSlots = 5;
@@ -22,60 +22,29 @@ public static class SaveLoadSystem
 
     public static void SaveSettingsData(SettingsData settingsData)
     {
-        DebugLog("Saving Game Settings");
-        if (dataService.SaveData(gameSettingsPath, settingsData))
-        {
-            return;
-        }
-        else
-        {
-            DebugError("Could not save Game Settings");
-        }
+        SaveData<SettingsData>("GameSettings.json", settingsData);
     }
 
-    public static void SavePlayerData(PlayerData playerData)
+    public static void SavePlayerData(GameData gameData)
     {
-        DebugLog("Saving Player Data");
-
-        if (dataService.SaveData(basePath + "PlayerData" + playerData.index.ToString() + ".json", playerData))
-        {
-            MakeScreenshot("PlayerData" +  playerData.index);
-            return;
-        }
-        else
-        {
-            DebugError("Could not save Player Data");
-        }
-    }
-
-    public static void SaveInventory(InventoryData inventory)
-    {
-        DebugLog("Saving Invenory");
-
-        if (dataService.SaveData(inventoryPath, inventory))
-        {
-            return;
-        }
-        else
-        {
-            DebugError("Could not save Inventory");
-        }
+        if (SaveData<GameData>("GameData" + gameData.index.ToString() + ".json", gameData))
+            MakeScreenshot("GameData" + gameData.index);
     }
 
     // === DELETE ===
 
-    public static bool DeletePlayerData(PlayerData playerData, Sprite screenshot)
+    public static bool DeleteGameData(GameData gameData, Sprite screenshot)
     {
-        DebugLog("Deleting Player Data");
+        DebugLog("Deleting Game Data");
 
-        if (dataService.DeleteData(basePath + "PlayerData" + playerData.index.ToString() + ".json", playerData))
+        if (dataService.DeleteData(basePath + "GameData" + gameData.index.ToString() + ".json", gameData))
         {
-            dataService.DeleteData(basePath + "PlayerData" + playerData.index.ToString() + ".png", screenshot);
+            dataService.DeleteData(basePath + "GameData" + gameData.index.ToString() + ".png", screenshot);
             return true;
         }
         else
         {
-            DebugError("Could not delete Player Data");
+            DebugError("Could not delete Game Data");
             return false;
         }
     }
@@ -98,44 +67,31 @@ public static class SaveLoadSystem
         {
             DebugLog("File Game Settings does not exist");
             return null;
-        };
-    }
-
-    public static PlayerData LoadPlayerData(int index)
-    {
-        string path = basePath + "PlayerData" + index.ToString() + ".json";
-
-        DebugLog("Loading Player Data");
-
-        if (File.Exists(Application.dataPath + "/" + path))
-        {
-            PlayerData playerData = new PlayerData();
-            playerData = dataService.LoadData<PlayerData>(path);
-
-            return playerData;
         }
-        else
-        {
-            DebugLog("File Player Data does not exist");
-            return null;
-        };
+        ;
     }
 
-    public static List<PlayerData> GetAllPlayerData()
+    public static GameData LoadGameData(int index)
     {
-        List<PlayerData> playerDataList = new List<PlayerData>();
+        string fileName = "GameData" + index.ToString() + ".json";
+        return LoadData<GameData>(fileName);
+    }
+
+    public static List<GameData> GetAllGameData()
+    {
+        List<GameData> gameDataList = new List<GameData>();
 
         for (int i = 0; i < saveSlots; i++)
         {
-            PlayerData playerData = LoadPlayerData(i);
+            GameData gameData = LoadGameData(i);
 
-            if (playerData == null)
+            if (gameData == null)
                 continue;
             else
-                playerDataList.Add(playerData);
+                gameDataList.Add(gameData);
         }
 
-        return playerDataList;
+        return gameDataList;
     }
 
     public static InventoryData LoadInventory()
@@ -154,7 +110,8 @@ public static class SaveLoadSystem
         {
             DebugLog("File Inventory does not exist");
             return null;
-        };
+        }
+        ;
     }
 
     public static InfoTextData LoadInfoText(string localisation)
@@ -186,42 +143,12 @@ public static class SaveLoadSystem
 
     public static bool CheckPlayerData()
     {
-        return dataService.CheckData(playerDataPath);
+        return dataService.CheckData(GameDataPath);
     }
 
     public static bool CheckInventory()
     {
         return dataService.CheckData(inventoryPath);
-    }
-
-
-    // Other saves
-
-    public static List<string> LoadStringList(string path)
-    {
-        if (File.Exists(Application.dataPath + "/" + path))
-        {
-            List<string> strings = new List<string>();
-            strings = dataService.LoadData<List<string>>(path);
-            return strings;
-        }
-        else
-        {
-            DebugLog("Null data");
-            return null;
-        };
-    }
-
-    public static void SaveStringList(List<string> list, string path)
-    {
-        if (dataService.SaveData(path, list))
-        {
-            return;
-        }
-        else
-        {
-            DebugError("Could not save file");
-        }
     }
 
     public static void MakeScreenshot(string name)
@@ -268,7 +195,7 @@ public static class SaveLoadSystem
     {
         string filePath = Application.dataPath + "/" + basePath + name + ".png";
 
-        if (!File.Exists(filePath)) 
+        if (!File.Exists(filePath))
         {
             Debug.LogWarning("File " + name + " does not exist");
             return null;
@@ -295,5 +222,37 @@ public static class SaveLoadSystem
     static void DebugError(string msg)
     {
         if (debugError) Debug.LogError(msg);
+    }
+
+    static bool SaveData<T>(string fileName, T data)
+    {
+        Debug.Log("Saving data: " + fileName);
+
+        if (dataService.SaveData<T>(basePath + fileName, data))
+        {
+            Debug.Log("Data saved");
+            return true;
+        }
+        else
+        {
+            Debug.LogError("Could not save file.");
+            return false;
+        }
+    }
+
+    static T LoadData<T>(string fileName)
+    {
+        Debug.Log("Loading Data: " + fileName);
+
+        string path = basePath + fileName;
+        T data = dataService.LoadData<T>(path);
+
+        if (data == null)
+        {
+            Debug.LogError("Could not load data");
+            return default;
+        }
+
+        return data;
     }
 }

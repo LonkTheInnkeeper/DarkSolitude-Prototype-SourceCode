@@ -1,16 +1,13 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class TechRoom1 : MonoBehaviour, ILocation
+public class TechRoom2 : MonoBehaviour, ILocation
 {
     [SerializeField] string id;
     AreaData locationData;
 
-    [Header("Levichair closeup")]
-    [SerializeField] SpriteRenderer chairRenderer;
-    [SerializeField] List<Sprite> chairCloseups;
-    [SerializeField] Transform chairPosition;
+    [Header("Closeup")]
+    [SerializeField] Transform closeupPosition;
 
     [Space]
     [SerializeField] GameObject cameras;
@@ -30,18 +27,13 @@ public class TechRoom1 : MonoBehaviour, ILocation
     }
 #endif
 
-    public void SetChairCoseup(int index)
-    {
-        chairRenderer.sprite = chairCloseups[index];
-    }
-
     public void SwitchToCloseup(bool closeup)
     {
         GameManager.Instance.closeupState = closeup;
 
         if (closeup)
         {
-            cameras.transform.position = chairPosition.position;
+            cameras.transform.position = closeupPosition.position;
         }
     }
 }

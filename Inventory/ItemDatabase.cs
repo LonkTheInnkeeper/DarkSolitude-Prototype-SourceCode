@@ -8,7 +8,7 @@ public class ItemDatabase : MonoBehaviour
 
     public ItemScriptable GetItem(string name)
     {
-        return items.FirstOrDefault(item => item.name == name);
+        return items.FirstOrDefault(item => item.itemName == name);
     }
 
     public ItemScriptable GetItem(int index)

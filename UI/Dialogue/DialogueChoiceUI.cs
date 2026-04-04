@@ -24,7 +24,7 @@ public class DialogueChoiceUI : MonoBehaviour, IUITrigger
         DialogueManager.Instance.dialogue.MakeChoice(choiceIndex);
     }
 
-    public void Trigger(bool trigger, string name)
+    public void UIAnimationTrigger(bool trigger, string name)
     {
         if (trigger)
         {

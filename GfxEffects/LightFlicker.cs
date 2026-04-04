@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class LightFlicker : MonoBehaviour
+public class LightFlicker : MonoBehaviour, ISavable
 {
     [SerializeField] Sprite lightOn;
     [SerializeField] Sprite lightOff;
@@ -21,20 +21,39 @@ public class LightFlicker : MonoBehaviour
 
     bool lightOnBool = true;
 
-    //private void Start()
-    //{
-    //    StartCoroutine(Flicker());
-    //}
+    private void Start()
+    {
+        ApplyState();
+    }
 
     private void OnEnable()
     {
+        ApplyState();
+    }
+
+    public void ApplyState()
+    {
+        print("Checking state");
+
+        if (GameManager.Instance.CheckWorldState("screwdriver_picked"))
+        {
+            print("Check");
+            flickerRenderer.sprite = lightOff;
+            return;
+        }
+
+        print("Start flicker");
+
         StartCoroutine(Flicker());
+
     }
 
     IEnumerator Flicker()
     {
         while (true)
         {
+            print("Coroutine start");
+
             if (lightOnBool)
             {
                 if (lightObject != null)
@@ -64,4 +83,5 @@ public class LightFlicker : MonoBehaviour
             if (!flickering) break;
         }
     }
+
 }

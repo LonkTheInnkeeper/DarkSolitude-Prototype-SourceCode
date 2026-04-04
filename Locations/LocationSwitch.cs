@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class LocationSwitch : MonoBehaviour
@@ -18,9 +17,9 @@ public class LocationSwitch : MonoBehaviour
     public void StartSwitch()
     {
         currentDoors = GetComponent<Doors>();
-        if (!currentDoors.ToggleDoors(true)) return;
+        if (!currentDoors.ToggleDoorsAnimation(true)) return;
 
-        UIManager.Instance.locationShade.StartSwitch(this);
+        //UIManager.Instance.locationShade.TriggerShade(this);
     }
 
     public void SwitchLocation()
@@ -34,7 +33,7 @@ public class LocationSwitch : MonoBehaviour
         playerMovement.SetDestination(targetDoors.spawnPoint.position);
         playerMovement.transform.rotation = targetDoors.spawnPoint.rotation;
 
-        targetDoors.ToggleDoors(false);
+        targetDoors.ToggleDoorsAnimation(false);
         //LocationManager.instance.ToggleLocation(false, currentLocationIndex);
         currentLocation.SetActive(false);
     }

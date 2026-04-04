@@ -23,8 +23,8 @@ public class Movement : MonoBehaviour
     {
         SetAnimation();
 
-        if (GameManager.Instance.gameState != GameManager.GameState.Navigation ||
-            GameManager.Instance.closeupState) return;
+        if (GameManager.Instance.gameState != GameManager.GameState.Navigation &&
+            GameManager.Instance.gameState != GameManager.GameState.Closeup) return;
 
         CheckInteraction();
     }
@@ -60,6 +60,7 @@ public class Movement : MonoBehaviour
                 navigation.remainingDistance <= navigation.stoppingDistance &&
                 navigation.velocity.magnitude < 0.1f)
             {
+                print("Checking interaction");
                 interactable.Interact();
                 interactable = null;
             }
@@ -70,10 +71,11 @@ public class Movement : MonoBehaviour
     {
         if (interactable.GetInteractionPoints().Count == 0)
         {
+            print("Setting interactable");
             this.interactable = interactable;
             lastInteractable = interactable;
 
-            interactable.Interact();
+            //interactable.Interact();
             return;
         }
 

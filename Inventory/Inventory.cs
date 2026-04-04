@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Audio;
 using static UnityEditor.Progress;
@@ -44,58 +46,64 @@ public class Inventory : MonoBehaviour
     {
         foreach (var item in debugItems)
         {
-            AddItem(item);
+            TryAddItem(item.itemName);
         }
     }
 
-    public void AddItem(ItemScriptable item)
+    public bool TryAddItem(string item)
     {
         if (item == null)
         {
             DebugMessage("Item does not exist.");
+            return false;
+        }
+
+        foreach (var item_ in gameMan.gameData.inventoryData.items)
+        {
+            if (item_.Value == null)
+            {
+                DebugMessage("Adding item: " + item);
+                gameMan.gameData.inventoryData.items[item_.Key] = item;
+                return true;
+            }
+        }
+
+        DebugMessage("Inventory full");
+        return false;
+    }
+
+    public bool TryCombineItems(int slot, out ItemScriptable comboItem)
+    {
+        ItemScriptable item = inventoryMan.itemDatabase.GetItem(gameMan.gameData.inventoryData.items[slot]);
+        comboItem = null;
+
+        if (item == inventoryMan.activeItem.secondItem)
+        {
+            comboItem = item.comboResult;
+            gameMan.gameData.inventoryData.items[slot] = comboItem.itemName;
+            RemoveActiveItem();
+            return true;
+        }
+
+        ReturnActiveItem();
+        return false;
+    }
+
+    public void SelectItem(int slot)
+    {
+        if (!gameMan.gameData.inventoryData.TryGetItem(slot, out var item))
             return;
-        }
 
-        uiMan.inventoryUI.AddItem(item);
+        //if (item.Value == null)
+        //{
+        //    inventoryData = gameMan.gameData.inventoryData;
+        //    inventoryData.TryGetItem(slot, out item);
+        //}
 
-        DebugMessage("Adding item: " + item.name);
-    }
+        print($"Sellecting slot {item.Key} with item {item.Value}");
 
-    public void AddItem(string itemName)
-    {
-        ItemScriptable item = database.GetItem(itemName);
-
-        if (item == null)
-        {
-            DebugMessage("Item " + itemName + " does not exist.");
-            return;
-        }
-
-        uiMan.inventoryUI.AddItem(item);
-
-        DebugMessage("Adding item: " + item.name);
-    }
-
-    public ItemScriptable CombineItems(ItemScriptable secondItem)
-    {
-        if (secondItem == inventoryMan.activeItem.secondItem)
-        {
-            print("Combining items");
-            uiMan.infoTextUI.TriggerVoicelineDelayed(secondItem.comboResult.comboLine, 3f);
-            return secondItem.comboResult;
-        }
-        else
-        {
-            print("Can't combine items");
-            return null;
-        }
-    }
-
-    public void SelectItem(ItemScriptable item)
-    {
-        print("Sellecting item: " + item.itemName);
-
-        inventoryMan.SetActiveItem(item);
+        inventoryMan.SetActiveItem(item.Value);
+        gameMan.gameData.inventoryData.items[slot] = null;
         gameMan.SwitchGameState(GameManager.GameState.ItemHandling);
 
         AudioManager audioMan = AudioManager.Instance;
@@ -103,55 +111,37 @@ public class Inventory : MonoBehaviour
         itemsAudio.Play();
     }
 
-    public void DesellectItem()
+    public void ReturnActiveItem()
     {
-        AddItem(inventoryMan.activeItem);
-        ReturnItem();
-        uiMan.inventoryUI.CloseInventory();
-        gameMan.SwitchGameState(GameManager.GameState.Navigation);
+        if (inventoryMan.activeItem == null) return;
 
+        TryAddItem(inventoryMan.activeItem.itemName);
+        RemoveActiveItem();
     }
 
-    public void ReturnItem()
+    public void RemoveActiveItem()
     {
-        if (inventoryMan.activeItem != null)
-        {
-            inventoryMan.SetActiveItem(null);
+        if (inventoryMan.activeItem == null) return;
 
-            AudioManager audioMan = AudioManager.Instance;
-            itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
-            itemsAudio.Play();
-        }
+        inventoryMan.SetActiveItem(null);
+
+        AudioManager audioMan = AudioManager.Instance;
+        itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
+        itemsAudio.Play();
     }
 
     public bool CheckItemInInventory(string itemName)
     {
-        if (inventoryMan.inventoryData == null)
+        if (gameMan.gameData.inventoryData == null)
             return false;
-        else
-            return inventoryMan.inventoryData.CheckItem(itemName);
-    }
 
-    public void LoadInventory()
-    {
-        List<string> items = gameMan.playerData.GetAllItems();
-
-        foreach (var item in items)
+        foreach (var item_ in gameMan.gameData.inventoryData.items)
         {
-            AddItem(item);
-        }
-    }
-
-    public void SaveInventory(PlayerData playerData)
-    {
-        List<string> items = new List<string>();
-
-        foreach (var item in uiMan.inventoryUI.GetAllItems())
-        {
-            items.Add(item.itemName);
+            if (item_.Value == itemName)
+                return true;
         }
 
-        playerData.SaveItems(items);
+        return false;
     }
 
     void DebugMessage(string message)

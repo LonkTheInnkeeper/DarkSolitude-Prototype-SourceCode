@@ -16,13 +16,13 @@ public class UICursorTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        uiTrigger.Trigger(true, triggerName);
+        uiTrigger.UIAnimationTrigger(true, triggerName);
         //print(triggerName + " trigger entered");
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        uiTrigger.Trigger(false, triggerName);
+        uiTrigger.UIAnimationTrigger(false, triggerName);
         //print(triggerName + " trigger exited");
     }
 }

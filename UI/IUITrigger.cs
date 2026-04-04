@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IUITrigger
 {
-    public void Trigger(bool trigger, string name);
+    public void UIAnimationTrigger(bool trigger, string name);
 }

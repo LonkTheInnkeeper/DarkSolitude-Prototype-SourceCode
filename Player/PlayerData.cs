@@ -5,27 +5,12 @@ using Unity.Mathematics;
 
 public class PlayerData
 {
-    public int index;
-    public string fileName = "Empty name";
-    public string fileDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-
-    public List<string> inventory = new List<string>();
-    public List<LocationData> locations = new List<LocationData>();
+    public List<AreaData> locations = new List<AreaData>();
 
     public int currentLocation = 0;
 
     public float positionX;
     public float positionZ;
-
-    public List<string> GetAllItems()
-    {
-        return inventory;
-    }
-
-    public void SaveItems(List<string> items)
-    {
-        inventory = new List<string>(items);
-    }
 
     public void SetCurrentLocation(int location)
     {
@@ -43,13 +28,8 @@ public class PlayerData
         return new float2(positionX, positionZ);
     }
 
-    public void UpdateFileDate()
+    public void SaveLocations(List<AreaData> locations)
     {
-        fileDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-    }
-
-    public void SaveLocations(List<LocationData> locations)
-    {
-        this.locations = new List<LocationData>(locations);
+        this.locations = new List<AreaData>(locations);
     }
 }

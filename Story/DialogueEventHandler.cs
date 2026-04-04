@@ -34,7 +34,7 @@ public class DialogueEventHandler : MonoBehaviour
     void AddItem(string name)
     {
         DebugMessage("Adding item " + name);
-        inventoryMan.inventory.AddItem(name);
+        inventoryMan.inventory.TryAddItem(name);
     }
 
     void CheckItem(string name)

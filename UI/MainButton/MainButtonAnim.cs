@@ -66,7 +66,7 @@ public class MainButtonAnim : MonoBehaviour, IUITrigger
         }
     }
 
-    public void Trigger(bool trigger, string name)
+    public void UIAnimationTrigger(bool trigger, string name)
     {
         if (trigger)
         {

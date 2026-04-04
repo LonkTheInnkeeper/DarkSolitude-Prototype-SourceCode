@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject player;
     public MouseControl mouseControl;
 
-    public PlayerData playerData;
+    public GameData gameData;
     public SettingsData settingsData;
 
     [HideInInspector] public bool closeupState;
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
         ItemHandling,
         Menu,
         StoryEvent,
+        Closeup,
         Debug
     }
 
@@ -33,7 +34,7 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
 
-        playerData = new PlayerData();
+        gameData = new GameData();
         settingsData = new SettingsData();
     }
 
@@ -66,8 +67,25 @@ public class GameManager : MonoBehaviour
         gameState = state;
     }
 
-    public void CloseupState(bool state)
+    public bool CheckWorldState(string key)
     {
-        closeupState = state;
+        if (gameData.areaData.CheckKey(key) && gameData.areaData.worldStates[key] == true)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void AddWorldstate(string key, bool state)
+    {
+        if (gameData.areaData.worldStates.ContainsKey(key))
+        {
+            gameData.areaData.worldStates[key] = state;
+        }
+        else
+        {
+            gameData.areaData.worldStates.Add(key, state);
+        }
     }
 }

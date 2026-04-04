@@ -1,35 +1,22 @@
+using System;
 using UnityEngine;
 
 public class Loc1 : MonoBehaviour, ILocation
 {
-    [SerializeField] int index;
-    LocationData locationData;
+    [SerializeField] string id;
 
-    public bool ContainsKey(string key)
+    public string GetID()
     {
-        return locationData.data.Contains(key);
+        return id;
     }
 
-    public void AddKey(string key)
+#if UNITY_EDITOR
+    private void OnValidate()
     {
-        locationData.data.Add(key);
+        if (string.IsNullOrEmpty(id))
+        {
+            id = Guid.NewGuid().ToString();
+        }
     }
-
-    public LocationData GetData()
-    {
-        return locationData;
-    }
-
-    public int GetIndex()
-    {
-        return index;
-    }
-
-    public void SetData(LocationData data)
-    {
-        if (data == null)
-            locationData = new LocationData(index);
-        else
-            locationData = data;
-    }
+#endif
 }

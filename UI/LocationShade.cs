@@ -3,33 +3,33 @@ using UnityEngine;
 public class LocationShade : MonoBehaviour
 {
     Animator animator;
-    LocationSwitch locationSwitch;
-    PlayerData playerData;
+    Doors currentDoors;
+    GameData gameData;
 
     private void Start()
     {
         animator = GetComponent<Animator>();
     }
 
-    public void StartSwitch(LocationSwitch locationSwitch)
+    public void TriggerShade(Doors doors)
     {
-        this.locationSwitch = locationSwitch;
+        currentDoors = doors;
         animator.SetTrigger("Location");
     }
 
     public void SwitchLocation()
     {
-        locationSwitch.SwitchLocation();
+        LocationManager.Instance.SwitchLocation(currentDoors);
     }
 
-    public void StartLoadig(PlayerData playerData) 
+    public void StartLoadig(GameData gameData) 
     {
-        this.playerData = playerData;
+        this.gameData = gameData;
         animator.SetTrigger("LoadGame");
     }
 
     public void LoadGame()
     {
-        SaveLoadManager.Instance.LoadPlayerData(playerData);
+        SaveLoadManager.Instance.LoadGameData(gameData);
     }
 }
