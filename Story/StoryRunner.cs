@@ -65,8 +65,7 @@ public class StoryRunner
             currentStory = currentView.ProcessStory(currentStory);
 
             currentView.PrintStoryBlock(GetStoryBlock());
-            //currentView.DisplayText(text, currentChoice, currentTags);
-            //currentView.DisplayChoices(currentStory.currentChoices);
+            PlayVoice(currentStory.currentText.TrimEnd());
         }
         else
         {
@@ -119,7 +118,7 @@ public class StoryRunner
 
         if (currentTags.line != null)
         {
-            PlayVoice();
+            //PlayVoice();
         }
 
         if (currentTags.action != null)
@@ -141,6 +140,8 @@ public class StoryRunner
 
     public void ExitStory()
     {
+        Resources.UnloadUnusedAssets();
+
         currentView.Close();
 
         currentStory = null;
@@ -171,25 +172,25 @@ public class StoryRunner
             return;
         }
 
-        currentChoice = currentStory.currentChoices[index].text;
+        currentChoice = storyData.choiceDictionary[currentStory.currentChoices[index].text];
         currentStory.ChooseChoiceIndex(index);
 
         ContinueStory();
     }
 
-    public void PlayVoice()
+    public void PlayVoice(string text)
     {
         string line = currentTags.line;
         AudioClip clip = null;
 
         if (currentView is DialogueView)
         {
-            clip = storyMan.storyDatabase.GetDialogueVoice(storyName, line);
+            clip = storyMan.storyDatabase.GetDialogueVoice(storyName, text);
         }
 
         else if (currentView is CommentView)
         {
-            clip = storyMan.storyDatabase.GetCommentVoice(storyName, line);
+            clip = storyMan.storyDatabase.GetCommentVoice(storyName, text);
         }
 
         audioMan.dialogueVoiceSource.clip = clip;

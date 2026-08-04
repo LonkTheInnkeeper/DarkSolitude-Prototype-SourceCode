@@ -146,7 +146,7 @@ public static class SaveLoadSystem
 
     public static InfoTextData LoadInfoText(string localisation)
     {
-        string path = Path.Combine(Application.streamingAssetsPath, "InfoTexts", localisation + ".json");
+        string path = Path.Combine(Application.streamingAssetsPath, "InfoTexts", "InfoText_" + localisation + ".json");
 
         if (File.Exists(path))
         {
@@ -163,7 +163,7 @@ public static class SaveLoadSystem
 
     public static UITextData LoadUITextData(SettingsData.TextLang localisation)
     {
-        string path = Path.Combine(Application.streamingAssetsPath, "UITexts", localisation + ".json");
+        string path = Path.Combine(Application.streamingAssetsPath, "UITexts", "UI_" + localisation + ".json");
 
         if (File.Exists(path))
         {
@@ -180,7 +180,7 @@ public static class SaveLoadSystem
 
     public static UITextData LoadUITextData(SettingsData.VoiceLang localisation)
     {
-        string path = Path.Combine(Application.streamingAssetsPath, "UITexts", localisation + ".json");
+        string path = Path.Combine(Application.streamingAssetsPath, "UITexts", "UI_" + localisation + ".json");
 
         if (File.Exists(path))
         {
@@ -214,7 +214,7 @@ public static class SaveLoadSystem
 
     public static StoryData LoadStoryData(string name, string localisation)
     {
-        string path = Path.Combine(Application.dataPath, "Resources", "Story", "Dialogues", name, localisation + ".json");
+        string path = Path.Combine(Application.streamingAssetsPath, "Story", "Dialogues", name, name + "_" + localisation + ".json");
 
         if (File.Exists(path))
         {

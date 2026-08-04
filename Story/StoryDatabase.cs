@@ -8,9 +8,9 @@ public class StoryDatabase : MonoBehaviour
     public TextAsset GetDialogue(string name)
     {
         string localisation = GameManager.Instance.settingsData.textLang.ToString();
-        string dialogueName = $"{name}_{localisation}";
+        string dialogueName = $"{name}";
 
-        TextAsset dialogue = Resources.Load<TextAsset>($"Story/Dialogues/{name}/{localisation}/{dialogueName}");
+        TextAsset dialogue = Resources.Load<TextAsset>($"Story/Dialogues/{name}/{name}");
 
         if (dialogue == null)
         {
@@ -72,10 +72,10 @@ public class StoryDatabase : MonoBehaviour
         return infoTexts.data[key];
     }
 
-    public AudioClip GetDialogueVoice(string dialogueName, string line)
+    public AudioClip GetDialogueVoice(string dialogueName, string key)
     {
         string localisation = "cz";
-        string clipName = $"{dialogueName}_{localisation}_{line}";
+        string clipName = $"{key}_{localisation}";
         AudioClip clip = Resources.Load<AudioClip>($"Story/Dialogues/{dialogueName}/{localisation}/{clipName}");
 
         if (clip == null)
