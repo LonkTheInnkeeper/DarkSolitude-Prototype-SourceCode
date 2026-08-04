@@ -7,6 +7,7 @@ public class InteractionClass
 {
     [SerializeField] ItemScriptable requiredItem;
     [SerializeField] string requiredState;
+    [SerializeField] bool requiredStateValue;
 
     [Space]
     [SerializeField] bool removeItemAfterUse = true;
@@ -25,18 +26,20 @@ public class InteractionClass
     {
         if (!eventAvailable) return;
 
+        Debug.Log("Event triggered");
+
         InventoryManager inventoryMan = InventoryManager.Instance; 
         GameManager gameMan = GameManager.Instance;
 
         if ((requiredItem != null && inventoryMan.activeItem != requiredItem) ||
-            (requiredState != string.Empty && !gameMan.CheckWorldState(requiredState)))
+            (requiredState != string.Empty && !gameMan.CheckWorldState(requiredState) == requiredStateValue))
         {
             Debug.LogWarning("Interaction requirements not met");
             return;
         }
 
         if (removeItemAfterUse)
-            inventoryMan.inventory.RemoveActiveItem();
+            inventoryMan.inventory.DesellectActiveItem();
         else
             inventoryMan.inventory.ReturnActiveItem();
 
@@ -46,5 +49,10 @@ public class InteractionClass
         gameMan.AddWorldstate(addState, stateValue);
 
         event_.Invoke();
+    }
+
+    public bool IsAwailable()
+    {
+        return eventAvailable;
     }
 }

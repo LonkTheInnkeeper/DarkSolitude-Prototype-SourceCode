@@ -10,6 +10,8 @@ public class SaveLoadManager : MonoBehaviour
     InventoryManager inventoryMan;
     LocationManager locationMan;
 
+    public SaveLoadSlot sellectedSaveSlot;
+
     List<ISavable> savables = new List<ISavable>();
 
     private void Awake()
@@ -38,11 +40,11 @@ public class SaveLoadManager : MonoBehaviour
         //LoadPlayerData(SaveLoadSystem.LoadPlayerData(2));
     }
 
-    public void SavePlayerData(int index, string fileName)
+    public void SaveGameData(string fileName)
     {
         GameData gameData = gameMan.gameData;
 
-        gameData.index = index;
+        gameData.index = sellectedSaveSlot.index;
         gameData.UpdateFileDate();
         gameData.fileName = fileName;
         gameMan.player.GetComponent<Player>().SavePosition(gameData);
@@ -85,5 +87,10 @@ public class SaveLoadManager : MonoBehaviour
         }
 
         return settingsData;
+    }
+
+    public void DeteleFile()
+    {
+        SaveLoadSystem.DeleteGameData(sellectedSaveSlot.gameData, null);
     }
 }

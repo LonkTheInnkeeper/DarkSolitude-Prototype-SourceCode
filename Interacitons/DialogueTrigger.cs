@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class DialogueTrigger : MonoBehaviour
@@ -7,13 +8,25 @@ public class DialogueTrigger : MonoBehaviour
 
     public void TriggerDialogue()
     {
-        DialogueManager.Instance.dialogue.EnterDialogueMode(textAsset.name, diary);
+        if (!diary)
+        {
+            StoryManager.Instance.StartDialogue(textAsset.name);
+        }
+        else
+        {
+            StoryManager.Instance.StartDiary(textAsset.name);
+        }
 
         SwitchAnimation switchAnimation = GetComponent<SwitchAnimation>();
 
         if (switchAnimation != null) 
         {
-            DialogueManager.Instance.exitAnimation = switchAnimation;
+            StoryManager.Instance.exitAnimation = switchAnimation;
         }
+    }
+
+    public void PlayAudio()
+    {
+        GetComponent<AudioSource>().Play();
     }
 }

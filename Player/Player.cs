@@ -18,4 +18,15 @@ public class Player : MonoBehaviour
         print(transform.position);
         gameData.playerData.SavePosition(transform.position.x, transform.position.z);
     }
+
+    private void Update()
+    {
+        if (InputManager.Instance.RightClick())
+        {
+            if (GameManager.Instance.GetGameState() == GameManager.GameState.Navigation)
+            {
+                GameEvents.OnToggleHints.Invoke();
+            }
+        }
+    }
 }

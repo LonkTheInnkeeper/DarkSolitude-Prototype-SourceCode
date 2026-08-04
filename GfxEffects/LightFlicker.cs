@@ -52,8 +52,6 @@ public class LightFlicker : MonoBehaviour, ISavable
     {
         while (true)
         {
-            print("Coroutine start");
-
             if (lightOnBool)
             {
                 if (lightObject != null)

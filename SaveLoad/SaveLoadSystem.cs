@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public static class SaveLoadSystem
@@ -10,19 +12,47 @@ public static class SaveLoadSystem
     static bool debugError = true;
 
     static string basePath = "GameData/";
-    static string infoTextPath = "GameData/InfoText/";
+    static string infoTextPath = "Resources/Story/Infotext/";
 
-    static string gameSettingsPath = basePath + "SettingsData.json";
+    static string gameSettingsPath = basePath + "GameSettings.json";
     static string GameDataPath = basePath + "GameData.json";
     static string inventoryPath = basePath + "InventoryData.json";
 
-    static int saveSlots = 5;
+    static int saveSlots = 3;
 
     // === SAVE ===
 
     public static void SaveSettingsData(SettingsData settingsData)
     {
-        SaveData<SettingsData>("GameSettings.json", settingsData);
+        string path = Path.Combine(Application.persistentDataPath, "settings.json");
+        string json = JsonConvert.SerializeObject(settingsData, Formatting.Indented);
+
+        try
+        {
+            if (File.Exists(path))
+            {
+                DebugLog("Data exists. Deleting old file and creating a new one.");
+                File.Delete(path);
+            }
+            else
+            {
+                DebugLog("Creating a new file");
+            }
+
+            FileStream stream = File.Create(path);
+            stream.Close();
+            File.WriteAllText(path, JsonConvert.SerializeObject(settingsData));
+        }
+
+        catch (Exception e)
+        {
+            DebugError($"Unable to save data due to: {e.Message} {e.StackTrace}");
+        }
+
+
+        //File.WriteAllText(path, json);
+
+        //SaveData<SettingsData>("GameSettings.json", settingsData);
     }
 
     public static void SavePlayerData(GameData gameData)
@@ -53,14 +83,14 @@ public static class SaveLoadSystem
 
     public static SettingsData LoadSettingsData()
     {
-        string path = gameSettingsPath;
+        string path = Path.Combine(Application.persistentDataPath, "settings.json");
 
         DebugLog("Loading Game Settings");
 
-        if (File.Exists(Application.dataPath + "/" + path))
+        if (File.Exists(path))
         {
             SettingsData gameSettings = new SettingsData();
-            gameSettings = dataService.LoadData<SettingsData>(path);
+            gameSettings = JsonConvert.DeserializeObject<SettingsData>(File.ReadAllText(path));
             return gameSettings;
         }
         else
@@ -116,19 +146,86 @@ public static class SaveLoadSystem
 
     public static InfoTextData LoadInfoText(string localisation)
     {
-        string path = infoTextPath + localisation + ".json";
+        string path = Path.Combine(Application.streamingAssetsPath, "InfoTexts", localisation + ".json");
 
-        DebugLog("Loading InfoText");
-
-        if (File.Exists(Application.dataPath + "/" + path))
+        if (File.Exists(path))
         {
             InfoTextData infoText = new InfoTextData();
-            infoText = dataService.LoadData<InfoTextData>(path);
+            infoText = JsonConvert.DeserializeObject<InfoTextData>(File.ReadAllText(path));
             return infoText;
         }
         else
         {
             DebugLog("File InfoText does not exist");
+            return null;
+        }
+    }
+
+    public static UITextData LoadUITextData(SettingsData.TextLang localisation)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, "UITexts", localisation + ".json");
+
+        if (File.Exists(path))
+        {
+            UITextData uiText = new UITextData();
+            uiText = JsonConvert.DeserializeObject<UITextData>(File.ReadAllText(path));
+            return uiText;
+        }
+        else
+        {
+            DebugLog("File UIText does not exist");
+            return null;
+        }
+    }
+
+    public static UITextData LoadUITextData(SettingsData.VoiceLang localisation)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, "UITexts", localisation + ".json");
+
+        if (File.Exists(path))
+        {
+            UITextData uiText = new UITextData();
+            uiText = JsonConvert.DeserializeObject<UITextData>(File.ReadAllText(path));
+            return uiText;
+        }
+        else
+        {
+            DebugLog("File UIText does not exist");
+            return null;
+        }
+    }
+
+    public static CreditsData LoadEndCreditsData(SettingsData.TextLang localisation)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, "UITexts", "CreditsData_" + localisation + ".json");
+
+        if (File.Exists(path))
+        {
+            CreditsData creditsData = new CreditsData();
+            creditsData = JsonConvert.DeserializeObject<CreditsData>(File.ReadAllText(path));
+            return creditsData;
+        }
+        else
+        {
+            DebugLog("File CreditsData does not exist");
+            return null;
+        }
+    }
+
+    public static StoryData LoadStoryData(string name, string localisation)
+    {
+        string path = Path.Combine(Application.dataPath, "Resources", "Story", "Dialogues", name, localisation + ".json");
+
+        if (File.Exists(path))
+        {
+            StoryData storyData = new StoryData();
+            storyData = JsonConvert.DeserializeObject<StoryData>(File.ReadAllText(path));
+            return storyData;
+        }
+        else
+        {
+            Debug.LogWarning($"Story {name}.{localisation} does not exist");
+            Debug.LogWarning(path);
             return null;
         }
     }
@@ -249,7 +346,6 @@ public static class SaveLoadSystem
 
         if (data == null)
         {
-            Debug.LogError("Could not load data");
             return default;
         }
 

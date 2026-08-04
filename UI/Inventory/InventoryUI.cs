@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -5,75 +6,34 @@ using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour, IUITrigger
 {
-    public List<InventoryItemUI> items;
+    public List<InventoryItemUI> inventorySlotList;
     [SerializeField] RectTransform inventoryPanel;
     [SerializeField] Animator animator;
-    [SerializeField] float collapseDistance;
+    [SerializeField] Animator notificationAnimator;
     [SerializeField] GameObject activeItemUI;
     [SerializeField] TextMeshProUGUI activeItemName;
     [SerializeField] Image activeItemRenderer;
 
+    [Space]
+    [SerializeField] Image notificationIcon;
+
     GameManager gameMan;
     InventoryManager inventoryMan;
+    AudioManager audioMan;
 
     private void Start()
     {
         gameMan = GameManager.Instance;
         inventoryMan = InventoryManager.Instance;
         inventoryPanel.gameObject.SetActive(false);
+        audioMan = AudioManager.Instance;
     }
 
-    private void Update()
-    {
-        // Inventory UI panel collapsing
-        float distance = Vector2.Distance(inventoryPanel.localPosition, UIManager.Instance.mousePoint.localPosition);
-
-        if (gameMan.gameState == GameManager.GameState.Inventory &&
-           (distance > collapseDistance || InputManager.Instance.RightClick()))
-            ToggleInventory();
-
-        // Active item UI handling
-        if (inventoryMan.activeItem != null)
-        {
-            activeItemUI.SetActive(true);
-            activeItemName.text = inventoryMan.activeItem.itemName;
-            activeItemRenderer.sprite = inventoryMan.activeItem.inventoryIcon;
-        }
-        else
-        {
-            activeItemUI.SetActive(false);
-        }
-    }
-
-    public void ToggleInventory()
-    {
-        if (gameMan.gameState == GameManager.GameState.Navigation ||
-            gameMan.gameState == GameManager.GameState.Closeup)
-        {
-            FillInventorySlots();
-
-            gameMan.SwitchGameState(GameManager.GameState.Inventory);
-            inventoryPanel.gameObject.SetActive(true);
-            animator.SetTrigger("Open");
-        }
-        else if (gameMan.gameState == GameManager.GameState.Inventory ||
-                 gameMan.gameState == GameManager.GameState.ItemHandling ||
-                 gameMan.gameState == GameManager.GameState.Closeup)
-        {
-            if (!gameMan.closeupState)
-                gameMan.SwitchGameState(GameManager.GameState.Navigation);
-            else
-                gameMan.SwitchGameState(GameManager.GameState.Closeup);
-
-            animator.SetTrigger("Close");
-        }
-    }
-
-    void FillInventorySlots()
+    public void FillInventorySlots()
     {
         InventoryData inventoryData = GameManager.Instance.gameData.inventoryData;
 
-        foreach (var itemSlot in items)
+        foreach (var itemSlot in inventorySlotList)
         {
             if (inventoryData.TryGetItem(itemSlot.slotIndex, out var item))
             {
@@ -82,12 +42,37 @@ public class InventoryUI : MonoBehaviour, IUITrigger
         }
     }
 
-    public void UIAnimationTrigger(bool trigger, string name)
+    public void ItemNotification(ItemScriptable item)
     {
-        //if (!trigger && gameMan.gameState == GameManager.GameState.Inventory)
-        //{
-        //    gameMan.SwitchGameState(GameManager.GameState.Navigation);
-        //    animator.SetTrigger("Close");
-        //}
+        StartCoroutine(NotificationRoutine(item.inventoryIcon));
+    }
+
+    IEnumerator NotificationRoutine(Sprite icon)
+    {
+        notificationIcon.sprite = icon;
+        notificationAnimator.SetTrigger("Open");
+
+        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryNotification"));
+
+        yield return new WaitForSeconds(2);
+
+        notificationAnimator.SetTrigger("Close");
+    }
+
+    public void CursorOnUI(bool trigger)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void OpenInventory()
+    {
+        animator.SetTrigger("InventoryFrameOpen");
+        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryUp"));
+    }
+
+    public void CloseInventory()
+    {
+        animator.SetTrigger("InventoryFrameClose");
+        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryDown"));
     }
 }

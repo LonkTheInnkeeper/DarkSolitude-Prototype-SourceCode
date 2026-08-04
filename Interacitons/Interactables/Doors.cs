@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class Doors : MonoBehaviour
@@ -19,6 +19,8 @@ public class Doors : MonoBehaviour
     string openTrigger = "Open";
     string closeTrigger = "Close";
 
+    bool transfering = false;
+
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -29,10 +31,18 @@ public class Doors : MonoBehaviour
 
     public void TransferLocation()
     {
-        if (!doorUnlocked || !doorOn) return;
+        if (!doorUnlocked || !doorOn || transfering) return;
 
         ToggleDoorsAnimation(true);
-        UIManager.Instance.locationShade.TriggerShade(this);
+        StartCoroutine(TransferingRoutine());
+    }
+
+    IEnumerator TransferingRoutine()
+    {
+        transfering = true;
+        yield return new WaitForSeconds(1);
+        UIManager.Instance.screenShade.ShadeOnAction(() => LocationManager.Instance.SwitchLocation(this));
+        transfering = false;
     }
 
     public void SetDoorUnlocked(bool unlocked)
@@ -49,6 +59,11 @@ public class Doors : MonoBehaviour
     public bool ToggleDoorsAnimation(bool open)
     {
         AudioManager audioMan = AudioManager.Instance;
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
 
         if (doorAnimation == null)
         {
@@ -77,5 +92,10 @@ public class Doors : MonoBehaviour
         }
 
         return true;
+    }
+
+    private void OnEnable()
+    {
+        transfering = false;
     }
 }

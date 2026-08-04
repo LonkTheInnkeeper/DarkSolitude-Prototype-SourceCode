@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -9,8 +10,12 @@ public class UIManager : MonoBehaviour
     public DialogueUI dialogueUI;
     public DiaryUI diaryUI;
     public InfoTextUI infoTextUI;
-    public LocationShade locationShade;
+    public CommentUI commentUI;
+    public ScreenShade screenShade;
     public RectTransform mousePoint;
+    public HintsHandler hintsHandler;
+    public UITextData textData;
+    public SaveLoadUI saveLoadUI;
 
     [Space]
     public GameObject closeupUI;
@@ -20,8 +25,22 @@ public class UIManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        //SetTextData();
+        textData = SaveLoadSystem.LoadUITextData(GameManager.Instance.settingsData.textLang);
+        GameEvents.OnTextLanguageChange?.Invoke();
+    }
+
     private void Update()
     {
-        closeupUI.SetActive(GameManager.Instance.gameState == GameManager.GameState.Closeup);
+        if (closeupUI != null)
+            closeupUI.SetActive(GameManager.Instance.GetGameState() == GameManager.GameState.Closeup);
+    }
+
+    public void SetTextData()
+    {
+        textData = SaveLoadSystem.LoadUITextData(GameManager.Instance.settingsData.textLang);
+        GameEvents.OnTextLanguageChange?.Invoke();
     }
 }

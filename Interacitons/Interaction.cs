@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Interaction : MonoBehaviour, IInteractable
 {
@@ -32,10 +31,12 @@ public class Interaction : MonoBehaviour, IInteractable
 
         DisableEvent();
 
-        foreach (var interaction in interactions) 
+        foreach (var interaction in interactions)
         {
             interaction.TriggerEvent();
         }
+
+        GameManager.Instance.player.GetComponent<Movement>().RotateTo(GetPosition());
     }
 
     void DisableEvent()
@@ -45,5 +46,38 @@ public class Interaction : MonoBehaviour, IInteractable
             eventAvailable = false;
             GetComponent<Collider>().enabled = false;
         }
+    }
+
+    bool IsEnabled()
+    {
+        bool interactionsSum = true;
+
+        foreach (var interaction in interactions)
+        {
+            if (!interaction.IsAwailable())
+            {
+                interactionsSum = false;
+                break;
+            }
+        }
+
+        if (!interactionsSum || !eventAvailable) return false;
+        else return true;
+    }
+
+    void ToggleHint()
+    {
+        if (IsEnabled())
+            UIManager.Instance.hintsHandler.SpawnHint(transform.position, HintUI.HintColor.Orange);
+    }
+
+    private void OnEnable()
+    {
+        GameEvents.OnToggleHints += ToggleHint;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnToggleHints -= ToggleHint;
     }
 }

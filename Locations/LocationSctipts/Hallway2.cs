@@ -43,4 +43,13 @@ public class Hallway2 : MonoBehaviour, ILocation
     {
         ApplyState();
     }
+
+    void ILocation.ApplyState()
+    {
+        ApplyState();
+    }
+
+    public void TriggerStoryActions(List<string> actions)
+    {
+    }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LocationShade : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class LocationShade : MonoBehaviour
     public void SwitchLocation()
     {
         LocationManager.Instance.SwitchLocation(currentDoors);
+
     }
 
     public void StartLoadig(GameData gameData) 

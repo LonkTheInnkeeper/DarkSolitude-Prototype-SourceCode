@@ -18,7 +18,7 @@ public class CloseupControl : MonoBehaviour
 
     public void StartCloseup()
     {
-        gameMan.SwitchGameState(GameManager.GameState.Closeup);
+        gameMan.SetGameState(GameManager.GameState.Closeup);
         gameMan.closeupState = true;
 
         SetFrame(gameMan.gameData.areaData.GetCloseupFrame(closeupName));
@@ -27,7 +27,9 @@ public class CloseupControl : MonoBehaviour
 
     public void StopCloseup()
     {
-        gameMan.SwitchGameState(GameManager.GameState.Navigation);
+        if (!gameObject.activeInHierarchy) return;
+
+        gameMan.SetGameState(GameManager.GameState.Navigation);
         gameMan.closeupState = false;
 
         cameraPoint.GetComponent<CameraControl>().FocusOnPlayer();

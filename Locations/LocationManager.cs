@@ -36,11 +36,18 @@ public class LocationManager : MonoBehaviour
     {
         foreach (var location in locations)
         {
-            bool isTarget = location.GetComponent<ILocation>().GetID() == id;
+            ILocation iLocation = location.GetComponent<ILocation>();
+            bool isTarget = iLocation.GetID() == id;
+
+            if (isTarget)
+                iLocation.ApplyState();
+
             location.SetActive(isTarget);
         }
 
         gameMan.gameData.areaData.currentLocationID = id;
+        gameMan.cameraControl.FocusOnPlayer();
+        //GameEvents.OnLocationLoad?.Invoke();
     }
 
     public void SwitchLocation(Doors doors)
@@ -56,6 +63,8 @@ public class LocationManager : MonoBehaviour
         playerMovement.transform.rotation = doors.targetDoors.spawnPoint.rotation;
 
         doors.targetDoors.ToggleDoorsAnimation(false);
+
+        GameEvents.OnLocationLoad?.Invoke();
     }
 
     public void ToggleLocation(bool toggle, string id)
@@ -73,6 +82,19 @@ public class LocationManager : MonoBehaviour
         {
             Debug.LogWarning("Location not found");
         }
+    }
+
+    public ILocation GetActiveILocation()
+    {
+        foreach (var location in locations)
+        {
+            ILocation iLocation = location.GetComponent<ILocation>();
+
+            if (iLocation.GetID() == gameMan.gameData.areaData.currentLocationID)
+                return iLocation;
+        }
+
+        return null;
     }
 
     public void StartCloseup()

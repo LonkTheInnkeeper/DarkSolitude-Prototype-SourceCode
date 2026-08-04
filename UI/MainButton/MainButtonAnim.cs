@@ -5,7 +5,7 @@ public class MainButtonAnim : MonoBehaviour, IUITrigger
 {
     [Header("Animators")]
     [SerializeField] Animator mainAnimator;
-    [SerializeField] Animator buttonAnimator;
+    //[SerializeField] Animator buttonAnimator;
 
     [Header("Trigger objects")]
     [SerializeField] GameObject smallTrigger;
@@ -21,27 +21,25 @@ public class MainButtonAnim : MonoBehaviour, IUITrigger
     [SerializeField] float collapseDistance;
     [SerializeField] float openDistance;
 
+    [Header("Audio")]
+    [SerializeField] string menuUp;
+    [SerializeField] string menuDown;
+    [SerializeField] string buttonUp;
+
     bool collapsed = true;
 
-    string smallTriggerName;
-    string bigTriggerName;
+    [Space]
+    public string smallTriggerName;
+    public string bigTriggerName;
 
-    string button1Name;
-    string button2Name;
-    string button3Name;
-    string button4Name;
+    [Space]
+    public string button1Name;
+    public string button2Name;
+    public string button3Name;
+    public string button4Name;
 
     private void Start()
-    {
-        smallTriggerName = smallTrigger.GetComponent<UICursorTrigger>().triggerName;
-        bigTriggerName = bigTrigger.GetComponent<UICursorTrigger>().triggerName;
-
-        button1Name = button1.GetComponent<UICursorTrigger>().triggerName;
-        button2Name = button2.GetComponent<UICursorTrigger>().triggerName;
-        button3Name = button3.GetComponent<UICursorTrigger>().triggerName;
-        button4Name = button4.GetComponent<UICursorTrigger>().triggerName;
-
-        bigTrigger.SetActive(false);
+    {        bigTrigger.SetActive(false);
     }
 
     private void Update()
@@ -57,30 +55,32 @@ public class MainButtonAnim : MonoBehaviour, IUITrigger
         {
             mainAnimator.SetTrigger("Close");
             collapsed = true;
+            AudioManager.Instance.PlayUI(menuDown);
         }
 
         if (distance < openDistance && collapsed)
         {
             mainAnimator.SetTrigger("Open");
+            AudioManager.Instance.PlayUI(menuUp);
             collapsed = false;
         }
     }
 
-    public void UIAnimationTrigger(bool trigger, string name)
+    public void CursorOnUI(bool trigger)
     {
-        if (trigger)
-        {
-            buttonAnimator.SetTrigger(name + "On");
-        }
+        //if (trigger)
+        //{
+        //    buttonAnimator.SetTrigger(name + "On");
+        //}
 
-        else if (!trigger)
-        {
-            buttonAnimator.SetTrigger(name + "Off");
-        }
+        //else if (!trigger)
+        //{
+        //    buttonAnimator.SetTrigger(name + "Off");
+        //}
 
-        else
-        {
-            print("UI Main Button trigger does not exist");
-        }
+        //else
+        //{
+        //    print("UI Main Button trigger does not exist");
+        //}
     }
 }

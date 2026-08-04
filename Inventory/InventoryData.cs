@@ -7,6 +7,8 @@ public class InventoryData
 
     public InventoryData() 
     {
+        if (InventoryManager.Instance == null) return;
+
         for (int i = 0; i < InventoryManager.Instance.inventorySize; i++)
         {
             items.Add(i, null);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TechRoom2 : MonoBehaviour, ILocation
@@ -35,5 +36,14 @@ public class TechRoom2 : MonoBehaviour, ILocation
         {
             cameras.transform.position = closeupPosition.position;
         }
+    }
+
+    public void ApplyState()
+    {
+    }
+
+    public void TriggerStoryActions(List<string> actions)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Audio;
-using static UnityEditor.Progress;
 
 public class Inventory : MonoBehaviour
 {
@@ -64,6 +60,8 @@ public class Inventory : MonoBehaviour
             {
                 DebugMessage("Adding item: " + item);
                 gameMan.gameData.inventoryData.items[item_.Key] = item;
+                uiMan.inventoryUI.FillInventorySlots();
+                uiMan.inventoryUI.ItemNotification(inventoryMan.itemDatabase.GetItem(item));
                 return true;
             }
         }
@@ -81,7 +79,7 @@ public class Inventory : MonoBehaviour
         {
             comboItem = item.comboResult;
             gameMan.gameData.inventoryData.items[slot] = comboItem.itemName;
-            RemoveActiveItem();
+            DesellectActiveItem();
             return true;
         }
 
@@ -94,21 +92,13 @@ public class Inventory : MonoBehaviour
         if (!gameMan.gameData.inventoryData.TryGetItem(slot, out var item))
             return;
 
-        //if (item.Value == null)
-        //{
-        //    inventoryData = gameMan.gameData.inventoryData;
-        //    inventoryData.TryGetItem(slot, out item);
-        //}
-
-        print($"Sellecting slot {item.Key} with item {item.Value}");
-
         inventoryMan.SetActiveItem(item.Value);
         gameMan.gameData.inventoryData.items[slot] = null;
-        gameMan.SwitchGameState(GameManager.GameState.ItemHandling);
+        gameMan.SetGameState(GameManager.GameState.ItemHandling);
 
-        AudioManager audioMan = AudioManager.Instance;
-        itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
-        itemsAudio.Play();
+        //AudioManager audioMan = AudioManager.Instance;
+        //itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
+        //itemsAudio.Play();
     }
 
     public void ReturnActiveItem()
@@ -116,18 +106,20 @@ public class Inventory : MonoBehaviour
         if (inventoryMan.activeItem == null) return;
 
         TryAddItem(inventoryMan.activeItem.itemName);
-        RemoveActiveItem();
+        DesellectActiveItem();
     }
 
-    public void RemoveActiveItem()
+    public void DesellectActiveItem()
     {
         if (inventoryMan.activeItem == null) return;
 
         inventoryMan.SetActiveItem(null);
 
-        AudioManager audioMan = AudioManager.Instance;
-        itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
-        itemsAudio.Play();
+        gameMan.SetGameState(gameMan.GetPreviousGamerState());
+
+        //AudioManager audioMan = AudioManager.Instance;
+        //itemsAudio.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
+        //itemsAudio.Play();
     }
 
     public bool CheckItemInInventory(string itemName)

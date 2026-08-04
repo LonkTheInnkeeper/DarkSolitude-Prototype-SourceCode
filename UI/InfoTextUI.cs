@@ -1,85 +1,57 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InfoTextUI : MonoBehaviour
 {
     [SerializeField] Animator animator;
     [SerializeField] TextMeshProUGUI textUI;
-    [SerializeField] GameObject infoObject;
+    [SerializeField] Image mask;
+    [SerializeField] RectTransform rect;
+    [SerializeField] float rectScale;
+    [SerializeField] float animationSpeed;
 
-    bool lineMode = false;
+    bool textUp;
 
-    private void Start()
+    public void ToggleInfotext(bool toggle, string key)
     {
-        infoObject.SetActive(false);
+        if (GameManager.Instance.GetGameState() != GameManager.GameState.Navigation) return;
+
+        RectAnimation(toggle);
+
+        if (key != string.Empty)
+            textUI.text = StoryManager.Instance.storyDatabase.GetInfoText(key);
     }
 
-    public void ToggleInfotext(bool toggle, int textIndex)
+    void RectAnimation(bool toggle)
     {
-        if (GameManager.Instance.gameState != GameManager.GameState.Navigation || lineMode) return;
-
-        if (!infoObject.activeInHierarchy && toggle)
-            infoObject.SetActive(true);
-
-        if (!animator.gameObject.activeInHierarchy)
-            animator.gameObject.SetActive(true);
-
-        if (textIndex >= 0)
-            textUI.text = DialogueManager.Instance.infoTextDatabase.GetInfoText(textIndex);
-
-        animator.SetBool("Trigger", toggle);
-    }
-
-    public IEnumerator ToggleInfotextDelayed(bool toggle, int textIndex, float time)
-    {
-        if (GameManager.Instance.gameState != GameManager.GameState.Navigation || lineMode) yield return null;
-
-        if (!infoObject.activeInHierarchy && toggle)
-            infoObject.SetActive(true);
-
-        if (!animator.gameObject.activeInHierarchy)
-            animator.gameObject.SetActive(true);
-
-        if (textIndex >= 0)
-            textUI.text = DialogueManager.Instance.infoTextDatabase.GetInfoText(textIndex);
-
-        yield return new WaitForSeconds(time);
-
-        animator.SetBool("Trigger", toggle);
-    }
-
-    public IEnumerator ToggleInfoVoicelineDelayed(string text, float time)
-    {
-        print("Combo line");
-
-        lineMode = true;
-
-        if (!infoObject.activeInHierarchy)
-            infoObject.SetActive(true);
-
-        if (!animator.gameObject.activeInHierarchy)
+        if (toggle && !textUp)
         {
-            animator.gameObject.SetActive(true);
+            StartCoroutine(UITools.ScaleRectRoutine(rect, new Vector3(rectScale, rectScale), animationSpeed));
+            StartCoroutine(UITools.AlphaShadeRoutine(mask, 1, animationSpeed));
+        }
+        else if (!toggle && textUp)
+        {
+            StartCoroutine(UITools.ScaleRectRoutine(rect, new Vector3(rectScale / 1.5f, rectScale / 1.5f), animationSpeed));
+            StartCoroutine(UITools.AlphaShadeRoutine(mask, 0, animationSpeed));
         }
 
-        animator.SetBool("Trigger", true);
-        textUI.text = text;
-
-        yield return new WaitForSeconds(time);
-
-        animator.SetBool("Trigger", false);
-        print("End of the line");
-        lineMode = false;
+        textUp = toggle;
     }
 
-    public void TriggerVoicelineDelayed(string text, float time)
+    void CloseUIText()
     {
-        StartCoroutine(ToggleInfoVoicelineDelayed(text, time));
+        if (textUp)
+            RectAnimation(false);
     }
 
-    public void TriggerVoicelineDelayed(string text)
+    private void OnEnable()
     {
-        StartCoroutine(ToggleInfoVoicelineDelayed(text, 3.5f));
+        GameEvents.OnGameStateChange += CloseUIText;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnGameStateChange -= CloseUIText;
     }
 }

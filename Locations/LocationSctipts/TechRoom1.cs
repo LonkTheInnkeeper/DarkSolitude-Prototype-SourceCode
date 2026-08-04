@@ -15,6 +15,22 @@ public class TechRoom1 : MonoBehaviour, ILocation
     [Space]
     [SerializeField] GameObject cameras;
 
+    [Header("Roof")]
+    [SerializeField] Animator roofAnimator;
+    [SerializeField] string roofWorldState;
+
+    [Space]
+    [SerializeField] WalkTrigger coldComment;
+    [SerializeField] string coldCommentState;
+
+    GameManager gameMan;
+
+    private void Start()
+    {
+        gameMan = GameManager.Instance;
+
+    }
+
     public string GetID()
     {
         return id;
@@ -37,11 +53,53 @@ public class TechRoom1 : MonoBehaviour, ILocation
 
     public void SwitchToCloseup(bool closeup)
     {
-        GameManager.Instance.closeupState = closeup;
+        gameMan.closeupState = closeup;
 
         if (closeup)
         {
             cameras.transform.position = chairPosition.position;
         }
+    }
+
+    public void SwitchRoof()
+    {
+        print("Switching roof");
+        bool roofOpen = gameMan.CheckWorldState(roofWorldState);
+        //gameMan.AddWorldstate(roofWorldState, !roofOpen);
+        SetRoof(roofOpen);
+    }
+
+    public void SetRoof(bool roofOpen)
+    {
+        print("Setting roof");
+
+        if (roofOpen)
+        {
+            roofAnimator.SetTrigger("Off");
+            gameMan.AddWorldstate(roofWorldState, false);
+        }
+        else
+        {
+            roofAnimator.SetTrigger("On");
+            gameMan.AddWorldstate(roofWorldState, true);
+        }
+    }
+
+    public void ApplyState()
+    {
+        gameMan = GameManager.Instance;
+
+        if (!gameMan.CheckWorldState(coldCommentState))
+        {
+            coldComment.Trigger();
+            gameMan.AddWorldstate(coldCommentState, true);
+        }
+
+        SetRoof(gameMan.CheckWorldState(roofWorldState));
+    }
+
+    public void TriggerStoryActions(List<string> actions)
+    {
+        throw new NotImplementedException();
     }
 }

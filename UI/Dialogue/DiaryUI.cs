@@ -1,27 +1,65 @@
 using System.Collections.Generic;
 using Ink.Runtime;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DiaryUI : MonoBehaviour
 {
     [SerializeField] RectTransform diaryPanel;
+    [SerializeField] RectTransform diaryScrollMask;
     [SerializeField] RectTransform diaryContent;
     [SerializeField] RectTransform textPref;
     [SerializeField] RectTransform choicePref;
     [SerializeField] ScrollRect scrollRect;
 
+    [Space]
+    [SerializeField] RectTransform slideLine;
+    [SerializeField] float slideSpeed;
+    [SerializeField] TextMeshProUGUI runningText;
+
+    [Space]
+    [SerializeField] Animator animator;
+
+    [Header("Audio")]
+    [SerializeField] AudioClip dialogueOpen;
+    [SerializeField] AudioClip dialogueClose;
+
     List<RectTransform> content = new List<RectTransform>();
 
-    DialogueManager dialogueMan;
+    StoryManager storyMan;
 
     private void Start()
     {
-        dialogueMan = DialogueManager.Instance;
+        storyMan = StoryManager.Instance;
+        diaryPanel.gameObject.SetActive(false);
+    }
+
+    private void LateUpdate()
+    {
+        SlideLine();
+        RunningText();
     }
 
     public void OpenDiary()
     {
+        for (int i = diaryContent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(diaryContent.GetChild(i).gameObject);
+        }
+
+        content.Clear();
+
+        diaryPanel.gameObject.SetActive(true);
+        animator.SetTrigger("Open");
+
+        AudioManager.Instance.PlayUI(dialogueOpen);
+    }
+
+    public void PrintDiary(string text, string choice, StoryTagData tags)
+    {
+        string charName = string.Empty;
+
         foreach (var item in content)
         {
             Destroy(item.gameObject);
@@ -29,47 +67,67 @@ public class DiaryUI : MonoBehaviour
 
         content.Clear();
 
-        diaryPanel.gameObject.SetActive(true);
+        //Add next story text
+        var dialogueText = Instantiate(textPref, diaryContent);
+        dialogueText.GetComponent<DialogueTextUI>().SetText(text, string.Empty);
+
+        content.Add(dialogueText);
     }
 
-    public Story PrintDiary(Story currentDiary)
+    public void PrintChoices(List<Choice> choices)
     {
-        OpenDiary();
-        List<Choice> choices = new List<Choice>(currentDiary.currentChoices);
-
-        string diaryText = currentDiary.currentText;
-
-        while (choices.Count == 0)
-        {
-            diaryText += currentDiary.Continue() + "\n";
-            choices = new List<Choice>(currentDiary.currentChoices);
-        }
-
-        var text = Instantiate(textPref, diaryContent);
-        text.GetComponent<DialogueTextUI>().SetText(diaryText, null);
-        content.Add(text);
-
         for (int i = 0; i < choices.Count; i++)
         {
             var choice = Instantiate(choicePref, diaryContent);
             choice.GetComponent<DialogueChoiceUI>().SetChoice(choices[i].text, i);
             content.Add(choice);
         }
-
-        Canvas.ForceUpdateCanvases();
-        scrollRect.verticalNormalizedPosition = 1f;
-
-        return currentDiary;
     }
 
-    public void ExitDiary()
+    public void CloseDiary()
     {
-        if (dialogueMan.exitAnimation != null)
+        if (storyMan.exitAnimation != null)
         {
-            dialogueMan.exitAnimation.TriggerAnimation();
-            dialogueMan.exitAnimation = null;
+            storyMan.exitAnimation.TriggerAnimation("Close");
+            storyMan.exitAnimation = null;
         }
-        dialogueMan.dialogue.ExitDialogue();
-        diaryPanel.gameObject.SetActive(false);
+
+        animator.SetTrigger("Close");
+
+        GameManager.Instance.SetGameState(GameManager.GameState.Navigation);
+        AudioManager.Instance.PlayUI(dialogueClose);
+
+        GameEvents.OnDialogueEnd?.Invoke();
+    }
+
+    private void SlideLine()
+    {
+        if (!slideLine.gameObject.activeInHierarchy) return;
+
+        slideLine.anchoredPosition = new Vector2(slideLine.anchoredPosition.x, slideLine.anchoredPosition.y + slideSpeed);
+
+        if (slideLine.anchoredPosition.y >= 500)
+        {
+            slideLine.anchoredPosition = new Vector2(slideLine.anchoredPosition.x, -500);
+        }
+    }
+
+    private void RunningText()
+    {
+        if (!runningText.gameObject.activeInHierarchy) return;
+
+        RectTransform rect = runningText.rectTransform;
+
+        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y + slideSpeed);
+
+        if (rect.anchoredPosition.y >= 400)
+        {
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -400);
+        }
+    }
+
+    public void SetRunningText(string text)
+    {
+        runningText.text = text;
     }
 }

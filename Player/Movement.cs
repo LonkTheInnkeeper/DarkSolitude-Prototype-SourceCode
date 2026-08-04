@@ -10,8 +10,12 @@ public class Movement : MonoBehaviour
     IInteractable interactable;
     IInteractable lastInteractable;
 
+    GameManager gameMan;
+
     private void Start()
     {
+        gameMan = GameManager.Instance;
+
         navigation = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
@@ -22,9 +26,12 @@ public class Movement : MonoBehaviour
     private void Update()
     {
         SetAnimation();
+        SwitchPlayerState();
 
-        if (GameManager.Instance.gameState != GameManager.GameState.Navigation &&
-            GameManager.Instance.gameState != GameManager.GameState.Closeup) return;
+        if (gameMan.GetGameState() != GameManager.GameState.Navigation &&
+            gameMan.GetGameState() != GameManager.GameState.Closeup &&
+            gameMan.GetGameState() != GameManager.GameState.StoryEvent &&
+            gameMan.GetGameState() != GameManager.GameState.ItemHandling) return;
 
         CheckInteraction();
     }
@@ -37,9 +44,28 @@ public class Movement : MonoBehaviour
         return reachable;
     }
 
+    public void ForceSetDestination(Vector3 target)
+    {
+        if (target != null)
+        {
+            if (CheckReachable(target))
+            {
+                interactable = null;
+                lastInteractable = null;
+                navigation.destination = target;
+            }
+        }
+    }
+
+    public void ForceStop()
+    {
+        SetDestination(transform.position);
+        ResetInteractable();
+    }
+
     public void SetDestination(Vector3 target)
     {
-        if (GameManager.Instance.gameState != GameManager.GameState.Navigation || MouseTools.IsMouseOverUI()) return;
+        if (gameMan.GetGameState() != GameManager.GameState.Navigation || MouseTools.IsMouseOverUI()) return;
 
         if (target != null)
         {
@@ -62,6 +88,7 @@ public class Movement : MonoBehaviour
             {
                 print("Checking interaction");
                 interactable.Interact();
+                RotateTo(interactable.GetPosition());
                 interactable = null;
             }
         }
@@ -75,7 +102,7 @@ public class Movement : MonoBehaviour
             this.interactable = interactable;
             lastInteractable = interactable;
 
-            //interactable.Interact();
+            interactable.Interact();
             return;
         }
 
@@ -102,8 +129,8 @@ public class Movement : MonoBehaviour
 
     void SetAnimation()
     {
-        float currentSpeed = Mathf.Clamp(navigation.velocity.magnitude, 0f, 1f);
-        animator.SetFloat("Run", currentSpeed);
+        float currentSpeed = Mathf.Lerp(animator.GetFloat("Run"), navigation.velocity.magnitude, 5f * Time.deltaTime);
+        animator.SetFloat("Run", navigation.velocity.magnitude);
 
         if (lastInteractable != null && currentSpeed == 0)
         {
@@ -118,8 +145,35 @@ public class Movement : MonoBehaviour
         }
     }
 
+    public void RotateTo(Vector3 object_)
+    {
+        //Vector3 direction = object_ - transform.position;
+        //direction.y = 0;
+
+        //if (direction != Vector3.zero)
+        //{
+        //    Quaternion rotation = Quaternion.LookRotation(direction);
+        //    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 8);
+        //}
+    }
+
     public void WarpTo(Vector3 position)
     {
         navigation.Warp(position);
+    }
+
+    void SwitchPlayerState()
+    {
+        float currentSpeed = animator.GetFloat("Run");
+
+        if (currentSpeed > 0)
+        {
+            gameMan.playerState = GameManager.PlayerState.Running;
+        }
+        else
+        {
+            gameMan.playerState = GameManager.PlayerState.Idle;
+        }
+
     }
 }

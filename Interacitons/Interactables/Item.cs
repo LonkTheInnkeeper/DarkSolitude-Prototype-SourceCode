@@ -24,7 +24,6 @@ public class Item : MonoBehaviour, ISavable
             interaction.eventAvailable = false;
             if (hideItem) itemGraphics.SetActive(false);
         }
-
     }
 
     public void PickUpItem()
@@ -34,19 +33,23 @@ public class Item : MonoBehaviour, ISavable
 
         inventoryMan.inventory.TryAddItem(item.itemName);
 
+        GameManager.Instance.player.GetComponent<Animator>().SetTrigger("Gathering");
+
         if (audioSource != null)
         {
             audioSource.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
             audioSource.Play();
         }
 
-        if (hideItem) itemGraphics.SetActive(false);
-
-        GameManager.Instance.gameData.areaData.worldStates.Add(id, true);
+        if (hideItem)
+        {
+            GameManager.Instance.gameData.areaData.worldStates.Add(id, true);
+            itemGraphics.SetActive(false);
+        }
     }
 
     private void OnEnable()
     {
-        ApplyState();
+        GameEvents.OnLocationLoad += ApplyState;
     }
 }

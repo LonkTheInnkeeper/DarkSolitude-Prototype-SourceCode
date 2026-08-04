@@ -7,35 +7,11 @@ public class SwitchAnimation : MonoBehaviour
     [SerializeField] bool switchOn = false;
     [SerializeField] bool automaticTrigger = false;
 
-    public void TriggerAnimation()
+    public void TriggerAnimation(string trigger)
     {
-        print("Triggering animation");
-
-        if (!automaticTrigger) return;
-
-        //foreach (var animator in animators)
-        //{
-        //    if (animator.GetCurrentAnimatorStateInfo(0).length >
-        //        animator.GetCurrentAnimatorStateInfo(0).normalizedTime)
-        //    {
-        //        return;
-
-        //    }
-        //}
-
         foreach (var animator in animators)
         {
-            if (switchOn)
-            {
-                print("Trigger close");
-                animator.SetTrigger("Close");
-            }
-            else
-            {
-                print("Trigger open");
-                animator.SetTrigger("Open");
-            }
+                animator.SetTrigger(trigger);
         }
-        switchOn = !switchOn;
     }
 }

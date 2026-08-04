@@ -6,7 +6,7 @@ public class DoorLock : MonoBehaviour
     [SerializeField] Sprite lockedSprite;
     [SerializeField] Sprite unlockedSprite;
     [SerializeField] List<SpriteRenderer> renderers;
-    Animator lockAnimator;
+    [SerializeField] Animator lockAnimator;
 
     private void Start()
     {

@@ -3,14 +3,39 @@ using UnityEngine.Events;
 
 public class WalkTrigger : MonoBehaviour
 {
-    public UnityEvent walkEvent;
+    [SerializeField] string requiredState;
+    [SerializeField] bool requiredStateValue;
 
-    private void OnTriggerExit(Collider other)
+    [Space]
+    [SerializeField] string addState;
+    [SerializeField] bool addStateValue;
+
+    [Space]
+    public UnityEvent walkEvent;
+    GameManager gameMan;
+
+    private void Start()
+    {
+        gameMan = GameManager.Instance;
+    }
+
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            print("Walk trigger");
-            walkEvent.Invoke();
+            print("Trigger enter");
+            if (requiredState == null ||
+                gameMan.CheckWorldState(requiredState) == requiredStateValue)
+            {
+                Trigger();
+            }
         }
+    }
+
+    public void Trigger()
+    {
+        print("Walk trigger");
+        walkEvent.Invoke();
+        GameManager.Instance.AddWorldstate(addState, addStateValue);
     }
 }

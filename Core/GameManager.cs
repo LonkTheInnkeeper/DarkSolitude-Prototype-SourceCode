@@ -1,22 +1,31 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public CameraControl cameraControl;
     public Camera activeCamera;
-    public GameState gameState;
     public GameObject player;
     public MouseControl mouseControl;
+
+    private GameState gameState;
+    private GameState previousGameState;
+    public PlayerState playerState;
 
     public GameData gameData;
     public SettingsData settingsData;
 
     [HideInInspector] public bool closeupState;
 
+    [SerializeField] ScreenShade screenShade;
+
+    [Space]
     [SerializeField] TextMeshProUGUI gameStateDebug;
     [SerializeField] TextMeshProUGUI localDebug;
+    [SerializeField] TextMeshProUGUI playerStateDebug;
 
     public enum GameState
     {
@@ -30,42 +39,56 @@ public class GameManager : MonoBehaviour
         Debug
     }
 
+    public enum PlayerState
+    {
+        Idle,
+        Walking,
+        Running
+    }
+
     private void Awake()
     {
         Instance = this;
 
         gameData = new GameData();
-        settingsData = new SettingsData();
+        settingsData = SaveLoadSystem.LoadSettingsData();
+
+        localDebug.text = settingsData.textLang.ToString();
+
+        if (settingsData == null)
+            settingsData = new SettingsData();
     }
 
     private void Start()
     {
         activeCamera = Camera.main;
-        settingsData = SaveLoadManager.Instance.LoadSettings();
+        GameEvents.OnLocationLoad.Invoke();
     }
 
     private void Update()
     {
-        gameStateDebug.text = "Game state: " + gameState.ToString();
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            PlayerPrefs.SetString("Localisation", "cz");
-            DialogueManager.Instance.infoTextDatabase.SwitchLocalisation();
-        }
-        else if (Input.GetKeyDown(KeyCode.E)) 
-        {
-            PlayerPrefs.SetString("Localisation", "en");
-            DialogueManager.Instance.infoTextDatabase.SwitchLocalisation();
-        }
-
-        localDebug.text = "Localisation: " + PlayerPrefs.GetString("Localisation");
+        gameStateDebug.text = $"Game State: {gameState}";
     }
 
-    public void SwitchGameState(GameState state)
+    public void SetGameState(GameState state)
     {
+        print("Setting state: " + state.ToString());
+        previousGameState = gameState;
         gameState = state;
+        GameEvents.OnGameStateChange?.Invoke();
     }
+
+    public void SetGameState(string state)
+    {
+        print("Setting state");
+        previousGameState = gameState;
+        gameState = SystemTools.ParseEnum<GameState>(state);
+        GameEvents.OnGameStateChange?.Invoke();
+    }
+
+    public GameState GetGameState() { return gameState; }
+
+    public GameState GetPreviousGamerState() { return previousGameState; }
 
     public bool CheckWorldState(string key)
     {
@@ -79,6 +102,10 @@ public class GameManager : MonoBehaviour
 
     public void AddWorldstate(string key, bool state)
     {
+        if (key == string.Empty) return;
+
+        print($"Adding key: {key}, {state}");
+
         if (gameData.areaData.worldStates.ContainsKey(key))
         {
             gameData.areaData.worldStates[key] = state;
@@ -87,5 +114,13 @@ public class GameManager : MonoBehaviour
         {
             gameData.areaData.worldStates.Add(key, state);
         }
+    }
+
+    public void SwitchScene(int index)
+    {
+        screenShade.ShadeOnAction(() =>
+        {
+            SceneManager.LoadScene(index);
+        });
     }
 }
