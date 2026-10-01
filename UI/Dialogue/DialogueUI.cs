@@ -23,9 +23,9 @@ public class DialogueUI : MonoBehaviour
     [Space]
     [SerializeField] Animator animator;
 
-    [Header("Audio")]
-    [SerializeField] AudioClip dialogueOpen;
-    [SerializeField] AudioClip dialogueClose;
+    [Space]
+    [SerializeField] string dialogueOpen;
+    [SerializeField] string dialogueClose;
 
     List<RectTransform> content = new List<RectTransform>();
     List<RectTransform> choices = new List<RectTransform>();
@@ -56,7 +56,7 @@ public class DialogueUI : MonoBehaviour
         dialoguePanel.gameObject.SetActive(true);
         animator.SetTrigger("Open");
 
-        AudioManager.Instance.PlayUI(dialogueOpen);
+        AudioManager.Instance.ui.Play(dialogueOpen);
     }
 
     public void PrintStoryBlock(StoryBlock block)
@@ -145,8 +145,8 @@ public class DialogueUI : MonoBehaviour
     public void CloseDialogue()
     {
         animator.SetTrigger("Close");
- 
-        AudioManager.Instance.PlayUI(dialogueClose);
+
+        AudioManager.Instance.ui.Play(dialogueClose);
     }
 
     IEnumerator ScrollContent()
@@ -174,7 +174,7 @@ public class DialogueUI : MonoBehaviour
     {
         if (!slideLine.gameObject.activeInHierarchy) return;
 
-        slideLine.anchoredPosition = new Vector2(slideLine.anchoredPosition.x, slideLine.anchoredPosition.y + slideSpeed);
+        slideLine.anchoredPosition = new Vector2(slideLine.anchoredPosition.x, slideLine.anchoredPosition.y + slideSpeed * Time.deltaTime);
 
         if (slideLine.anchoredPosition.y >= 500)
         {

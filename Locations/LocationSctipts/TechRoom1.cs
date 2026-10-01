@@ -22,6 +22,8 @@ public class TechRoom1 : MonoBehaviour, ILocation
     [Space]
     [SerializeField] WalkTrigger coldComment;
     [SerializeField] string coldCommentState;
+    [SerializeField] AudioEmitter ambience;
+
 
     GameManager gameMan;
 
@@ -64,7 +66,7 @@ public class TechRoom1 : MonoBehaviour, ILocation
     public void SwitchRoof()
     {
         print("Switching roof");
-        bool roofOpen = gameMan.CheckWorldState(roofWorldState);
+        bool roofOpen = gameMan.GetWorldState(roofWorldState);
         //gameMan.AddWorldstate(roofWorldState, !roofOpen);
         SetRoof(roofOpen);
     }
@@ -76,12 +78,12 @@ public class TechRoom1 : MonoBehaviour, ILocation
         if (roofOpen)
         {
             roofAnimator.SetTrigger("Off");
-            gameMan.AddWorldstate(roofWorldState, false);
+            gameMan.SetWorldstate(roofWorldState, false);
         }
         else
         {
             roofAnimator.SetTrigger("On");
-            gameMan.AddWorldstate(roofWorldState, true);
+            gameMan.SetWorldstate(roofWorldState, true);
         }
     }
 
@@ -89,17 +91,27 @@ public class TechRoom1 : MonoBehaviour, ILocation
     {
         gameMan = GameManager.Instance;
 
-        if (!gameMan.CheckWorldState(coldCommentState))
+        if (!gameMan.GetWorldState(coldCommentState))
         {
             coldComment.Trigger();
-            gameMan.AddWorldstate(coldCommentState, true);
+            gameMan.SetWorldstate(coldCommentState, true);
         }
 
-        SetRoof(gameMan.CheckWorldState(roofWorldState));
+        SetRoof(gameMan.GetWorldState(roofWorldState));
     }
 
     public void TriggerStoryActions(List<string> actions)
     {
         throw new NotImplementedException();
+    }
+
+    private void OnEnable()
+    {
+        ambience.Play();
+    }
+
+    private void OnDisable()
+    {
+        ambience.Stop(); 
     }
 }

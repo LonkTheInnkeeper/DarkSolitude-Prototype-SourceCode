@@ -15,6 +15,11 @@ public class GameMenuDialoguesAnimations : MonoBehaviour
     [SerializeField] RectTransform loadFileRect;
     [SerializeField] RectTransform deleteFileRect;
 
+    [Header("Audio")]
+    [SerializeField] string itemSellect;
+    [SerializeField] string inventoryDown;
+    [SerializeField] string inventoryUp;
+
     MenuDialogueType currentDialogue;
 
     AudioManager audioMan;
@@ -148,7 +153,7 @@ public class GameMenuDialoguesAnimations : MonoBehaviour
 
     IEnumerator OpenRoutine(RectTransform rect)
     {
-        audioMan.PlayUI(audioMan.database.GetInventoryClip("ItemSellect"));
+        audioMan.ui.Play(itemSellect);
 
         Image mask = rect.GetComponent<Image>();
 
@@ -208,7 +213,7 @@ public class GameMenuDialoguesAnimations : MonoBehaviour
 
     public void CloseMenu()
     {
-        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryDown"));
+        audioMan.ui.Play(inventoryDown);
 
         GetComponent<Animator>().SetTrigger("Close");
         GetComponent<UICursorDistanceTrigger>().ResetState();
@@ -221,7 +226,7 @@ public class GameMenuDialoguesAnimations : MonoBehaviour
 
     public void OpenMenu()
     {
-        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryUp"));
+        audioMan.ui.Play(inventoryUp);
 
         GetComponent<Animator>().SetTrigger("Open");
 

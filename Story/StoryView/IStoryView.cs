@@ -9,4 +9,5 @@ public interface IStoryView
     void DisplayText(string text, string choice, StoryTagData tags);
     void DisplayChoices(List<Choice> choices);
     Story ProcessStory(Story story);
+    StoryRunner.StoryType GetStoryType();
 }

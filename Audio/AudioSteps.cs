@@ -1,17 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class AudioSteps : MonoBehaviour
 {
-    public AudioSource audioSource;
+    public float runningDelay;
+    public float walkingDelay;
 
-    public List<AudioClip> steps;
-    public float delay;
+    Movement movement;
+    AudioEmitter emitter;
 
     private void Start()
     {
+        emitter = GetComponent<AudioEmitter>();
+        movement = GetComponent<Movement>();
         StartCoroutine(Steps());
     }
 
@@ -19,25 +21,25 @@ public class AudioSteps : MonoBehaviour
     {
         while (true)
         {
-            AudioClip clip = steps[Random.Range(0, steps.Count)];
-
-            if (GameManager.Instance.playerState == GameManager.PlayerState.Running)
+            if (movement.currentPlayerState == Movement.PlayerState.Running)
             {
-                audioSource.clip = clip;
-                audioSource.Play();
+                emitter.Play();
+                yield return new WaitForSeconds(runningDelay);
             }
-
-            yield return new WaitForSeconds(delay);
+            else if (movement.currentPlayerState == Movement.PlayerState.Walking)
+            {
+                emitter.Play();
+                yield return new WaitForSeconds(walkingDelay);
+            }
+            else
+            {
+                yield return new WaitForEndOfFrame();
+            }
         }
     }
 
     private void OnEnable()
     {
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-        }
-
         //StartCoroutine(Steps());
     }
 }

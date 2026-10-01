@@ -123,9 +123,21 @@ public class StoryManager : MonoBehaviour
             return null;
     }
 
+    public AudioClip GetDialogueVoice(string id)
+    {
+        if (storyRunner == null) return null;
+
+        return storyDatabase.GetDialogueVoice(storyRunner.storyName, id);
+    }
+
     void DebugMessage(string message)
     {
         if (debugMessage)
             Debug.Log(message);
+    }
+
+    public void ExitStory()
+    {
+        storyRunner.ExitStory();
     }
 }

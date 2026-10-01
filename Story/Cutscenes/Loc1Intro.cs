@@ -42,13 +42,13 @@ public class Loc1Intro : MonoBehaviour, ILocation
     IEnumerator Phase1()
     {
         startSceneEvent.Invoke();
-        screenShadeAction.TriggerShade(null, ScreenShade.ShadeType.ShadeOff);
         GameManager.Instance.SetGameState(GameManager.GameState.StoryEvent);
         yield return new WaitForSeconds(0.1f);
         camControl.FocusOnTarget(point1);
 
         doors1.ToggleDoorsAnimation(true);
         profezoro.SetInteractable(interaction1.GetComponent<IInteractable>());
+        profezoro.SetPlayerState(Movement.PlayerState.Walking);
 
         yield return new WaitForSeconds(5);
 
@@ -59,12 +59,14 @@ public class Loc1Intro : MonoBehaviour, ILocation
     {
         GameManager.Instance.SetGameState(GameManager.GameState.StoryEvent);
         profezoro.SetInteractable(interaction2.GetComponent<IInteractable>());
+        profezoro.SetPlayerState(Movement.PlayerState.Walking);
     }
 
     public void Phase3()
     {
         GameManager.Instance.SetGameState(GameManager.GameState.StoryEvent);
         profezoro.SetInteractable(interaction3.GetComponent<IInteractable>());
+        profezoro.SetPlayerState(Movement.PlayerState.Walking);
 
         StartCoroutine(Phase3Doors());
     }
@@ -72,6 +74,7 @@ public class Loc1Intro : MonoBehaviour, ILocation
     public void StartGame()
     {
         screenShadeAction.TriggerShade(endSceneEvent, ScreenShade.ShadeType.ShadeOff);
+        print("Starting game");
     }
 
     IEnumerator Phase3Doors()
@@ -83,11 +86,13 @@ public class Loc1Intro : MonoBehaviour, ILocation
 
         yield return new WaitForSeconds(1.5f);
         doors1.ToggleDoorsAnimation(false);
+
+        yield return new WaitForSeconds(1.5f);
+        screenShadeAction.TriggerShade(dialogueEvent, ScreenShade.ShadeType.ShadeOn);
     }
 
     public void EndScene()
     {
-        screenShadeAction.TriggerShade(dialogueEvent, ScreenShade.ShadeType.ShadeOn);
     }
 
     public string GetID()
@@ -102,7 +107,7 @@ public class Loc1Intro : MonoBehaviour, ILocation
 
     public void TriggerStoryActions(List<string> actions)
     {
-        foreach (string action in actions) 
+        foreach (string action in actions)
         {
             print("Triggering action: " + action);
 

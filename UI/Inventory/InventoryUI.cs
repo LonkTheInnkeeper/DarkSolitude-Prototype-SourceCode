@@ -17,16 +17,19 @@ public class InventoryUI : MonoBehaviour, IUITrigger
     [Space]
     [SerializeField] Image notificationIcon;
 
+    [Space]
+    [SerializeField] string inventoryNofitication;
+    [SerializeField] string inventoryUp;
+    [SerializeField] string inventoryDown;
+
     GameManager gameMan;
     InventoryManager inventoryMan;
-    AudioManager audioMan;
 
     private void Start()
     {
         gameMan = GameManager.Instance;
         inventoryMan = InventoryManager.Instance;
         inventoryPanel.gameObject.SetActive(false);
-        audioMan = AudioManager.Instance;
     }
 
     public void FillInventorySlots()
@@ -52,7 +55,7 @@ public class InventoryUI : MonoBehaviour, IUITrigger
         notificationIcon.sprite = icon;
         notificationAnimator.SetTrigger("Open");
 
-        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryNotification"));
+        AudioManager.Instance.ui.Play(inventoryNofitication);
 
         yield return new WaitForSeconds(2);
 
@@ -67,12 +70,12 @@ public class InventoryUI : MonoBehaviour, IUITrigger
     public void OpenInventory()
     {
         animator.SetTrigger("InventoryFrameOpen");
-        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryUp"));
+        AudioManager.Instance.ui.Play(inventoryUp);
     }
 
     public void CloseInventory()
     {
         animator.SetTrigger("InventoryFrameClose");
-        audioMan.PlayUI(audioMan.database.GetInventoryClip("InventoryDown"));
+        AudioManager.Instance.ui.Play(inventoryDown);
     }
 }

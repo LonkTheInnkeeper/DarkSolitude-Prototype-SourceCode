@@ -9,6 +9,7 @@ public class ScreenShade : MonoBehaviour
     [SerializeField] Image shade;
 
     public UnityEvent shadeAction;
+    public UnityEvent clearEvent;
     Animator animator;
 
     public enum ShadeType
@@ -34,10 +35,7 @@ public class ScreenShade : MonoBehaviour
             shadeAction = shadeEvent;
         }
 
-        if (animator == null)
-            animator = GetComponent<Animator>();
-
-        animator.SetTrigger(shadeType.ToString());
+        ShadeOnEvent();
     }
 
     public void ShadeOnAction(System.Action action)
@@ -45,9 +43,14 @@ public class ScreenShade : MonoBehaviour
         StartCoroutine(ShadeOnActionRoutine(action));
     }
 
-    public void ShadeOn()
+    public void ShadeOnEvent()
     {
-        StartCoroutine(ShadeRoutine(0, 1, shadeSpeed));
+        StartCoroutine(ShadeEventRoutine(0, 1, shadeSpeed));
+    }
+
+    public void ShadeOffEvent()
+    {
+        StartCoroutine(ShadeEventRoutine(1, 0, shadeSpeed));
     }
 
     public void ShadeOff()
@@ -55,11 +58,40 @@ public class ScreenShade : MonoBehaviour
         StartCoroutine(ShadeRoutine(1, 0, shadeSpeed));
     }
 
+    public void ShadeOn()
+    {
+        StartCoroutine(ShadeRoutine(0, 1, shadeSpeed));
+    }
+
     IEnumerator ShadeOnActionRoutine(System.Action action)
     {
-        yield return StartCoroutine(ShadeRoutine(0, 1, shadeSpeed));
+        yield return StartCoroutine(ShadeEventRoutine(0, 1, shadeSpeed));
 
         action?.Invoke();
+    }
+
+    IEnumerator ShadeEventRoutine(float startAlpha, float newAlpha, float speed)
+    {
+        shade.color = new Color(0, 0, 0, startAlpha);
+
+        float time = 0f;
+
+        while (time < speed)
+        {
+            time += Time.deltaTime;
+
+            float a = Mathf.Lerp(shade.color.a, newAlpha, time / speed);
+            shade.color = new Color(0, 0, 0, a);
+
+            yield return null;
+        }
+
+        shade.color = new Color(0, 0, 0, newAlpha);
+
+        if (shadeAction.GetPersistentEventCount() != 0)
+            ShadeAction();
+
+        shadeAction = clearEvent;
     }
 
     IEnumerator ShadeRoutine(float startAlpha, float newAlpha, float speed)
@@ -79,20 +111,23 @@ public class ScreenShade : MonoBehaviour
         }
 
         shade.color = new Color(0, 0, 0, newAlpha);
+
+        shadeAction = clearEvent;
     }
 
     public void ShadeAction()
     {
         shadeAction.Invoke();
+        shadeAction = clearEvent;
     }
 
     private void OnEnable()
     {
-        GameEvents.OnLocationLoad += ShadeOff;
+        GameEvents.OnLocationLoad += ShadeOffEvent;
     }
 
     private void OnDisable()
     {
-        GameEvents.OnLocationLoad -= ShadeOff;
+        GameEvents.OnLocationLoad -= ShadeOffEvent;
     }
 }

@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -90,7 +91,7 @@ public class GameManager : MonoBehaviour
 
     public GameState GetPreviousGamerState() { return previousGameState; }
 
-    public bool CheckWorldState(string key)
+    public bool GetWorldState(string key)
     {
         if (gameData.areaData.CheckKey(key) && gameData.areaData.worldStates[key] == true)
         {
@@ -100,7 +101,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    public void AddWorldstate(string key, bool state)
+    public void SetWorldstate(string key, bool state)
     {
         if (key == string.Empty) return;
 

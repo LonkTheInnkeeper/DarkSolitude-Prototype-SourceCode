@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class MainMenuBackground : MonoBehaviour
 {
@@ -15,10 +14,11 @@ public class MainMenuBackground : MonoBehaviour
     public Material shade;
 
     SpriteRenderer renderer_;
-    public string sfxName;
 
     [Space]
     public Texture2D mouseCursor;
+
+    [SerializeField] AudioEmitter emitter;
     
 
     private void Start()
@@ -41,7 +41,7 @@ public class MainMenuBackground : MonoBehaviour
 
             renderer_.sprite = doorOff;
             smog.material = shade;
-            AudioManager.Instance.PlaySFX(sfxName);
+            emitter.Play();
             yield return new WaitForSeconds(0.1f);
 
             if (PercentChance(20))
@@ -52,7 +52,7 @@ public class MainMenuBackground : MonoBehaviour
 
                 renderer_.sprite = doorOff;
                 smog.material = shade;
-                AudioManager.Instance.PlaySFX(sfxName);
+                emitter.Play();
                 yield return new WaitForSeconds(0.1f);
             }
         }

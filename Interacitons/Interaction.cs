@@ -36,7 +36,6 @@ public class Interaction : MonoBehaviour, IInteractable
             interaction.TriggerEvent();
         }
 
-        GameManager.Instance.player.GetComponent<Movement>().RotateTo(GetPosition());
     }
 
     void DisableEvent()
@@ -54,7 +53,7 @@ public class Interaction : MonoBehaviour, IInteractable
 
         foreach (var interaction in interactions)
         {
-            if (!interaction.IsAwailable())
+            if (!interaction.IsAvailable())
             {
                 interactionsSum = false;
                 break;

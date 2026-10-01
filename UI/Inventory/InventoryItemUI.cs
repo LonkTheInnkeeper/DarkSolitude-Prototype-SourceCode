@@ -9,15 +9,16 @@ public class InventoryItemUI : MonoBehaviour
     [SerializeField] Sprite defaultIcon;
     [SerializeField] ItemDescriptionUI itemDescription;
 
+    [SerializeField] string itemSellect;
+    [SerializeField] string itemCombo;
+
     InventoryManager inventoryMan;
     GameManager gameMan;
-    AudioManager audioMan;
 
     private void Start()
     {
         inventoryMan = InventoryManager.Instance;
         gameMan = GameManager.Instance;
-        audioMan = AudioManager.Instance;
     }
 
     public void SetItem(ItemScriptable item)
@@ -47,7 +48,7 @@ public class InventoryItemUI : MonoBehaviour
 
             inventoryMan.inventory.SelectItem(slotIndex);
             SetItem(null);
-            audioMan.PlayUI(audioMan.database.GetInventoryClip("ItemSellect"));
+            AudioManager.Instance.ui.Play(itemSellect);
         }
 
         else if (gameMan.GetGameState() == GameManager.GameState.ItemHandling)
@@ -58,7 +59,7 @@ public class InventoryItemUI : MonoBehaviour
                 if (inventoryMan.inventory.TryCombineItems(slotIndex, out var comboItem))
                 {
                     SetItem(comboItem);
-                    audioMan.PlayUI(audioMan.database.GetInventoryClip("ItemCombo"));
+                    AudioManager.Instance.ui.Play(itemCombo);
                     GameManager.Instance.gameData.inventoryData.items[slotIndex] = comboItem.itemName;
                 }
 
@@ -69,7 +70,7 @@ public class InventoryItemUI : MonoBehaviour
 
             // Place item
             SetItem(inventoryMan.activeItem);
-            audioMan.PlayUI(audioMan.database.GetInventoryClip("ItemSellect"));
+            AudioManager.Instance.ui.Play(itemSellect);
             GameManager.Instance.gameData.inventoryData.items[slotIndex] = inventoryMan.activeItem.itemName;
             inventoryMan.inventory.DesellectActiveItem();
         }

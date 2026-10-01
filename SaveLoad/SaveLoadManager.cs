@@ -26,9 +26,7 @@ public class SaveLoadManager : MonoBehaviour
             return;
         }
 
-        savables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
-        .OfType<ISavable>()
-        .ToList();
+        savables = FindObjectsByType<MonoBehaviour>().OfType<ISavable>().ToList();
     }
 
     private void Start()

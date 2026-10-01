@@ -32,7 +32,7 @@ public class InteractionClass
         GameManager gameMan = GameManager.Instance;
 
         if ((requiredItem != null && inventoryMan.activeItem != requiredItem) ||
-            (requiredState != string.Empty && !gameMan.CheckWorldState(requiredState) == requiredStateValue))
+            (requiredState != string.Empty && !gameMan.GetWorldState(requiredState) == requiredStateValue))
         {
             Debug.LogWarning("Interaction requirements not met");
             return;
@@ -46,12 +46,12 @@ public class InteractionClass
         if (disableAfterUse)
             eventAvailable = false;
 
-        gameMan.AddWorldstate(addState, stateValue);
+        gameMan.SetWorldstate(addState, stateValue);
 
         event_.Invoke();
     }
 
-    public bool IsAwailable()
+    public bool IsAvailable()
     {
         return eventAvailable;
     }

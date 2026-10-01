@@ -22,14 +22,7 @@ public class LocationManager : MonoBehaviour
     {
         gameMan = GameManager.Instance;
 
-        foreach (var location in locations)
-        {
-            if (location.gameObject.activeInHierarchy)
-            {
-                gameMan.gameData.areaData.currentLocationID = location.GetComponent<ILocation>().GetID();
-                return;
-            }
-        }
+        GetActiveILocation();
     }
 
     public void SwitchLocation(string id)
@@ -88,10 +81,19 @@ public class LocationManager : MonoBehaviour
     {
         foreach (var location in locations)
         {
-            ILocation iLocation = location.GetComponent<ILocation>();
+            if (location.activeInHierarchy)
+            {
+                ILocation ilocation = location.GetComponent<ILocation>();
+                gameMan.gameData.areaData.currentLocationID = ilocation.GetID();
 
-            if (iLocation.GetID() == gameMan.gameData.areaData.currentLocationID)
-                return iLocation;
+                print("Curent location: " + ilocation.GetID());
+                return ilocation;
+            }
+
+            //ILocation iLocation = location.GetComponent<ILocation>();
+
+            //if (iLocation.GetID() == gameMan.gameData.areaData.currentLocationID)
+            //    return iLocation;
         }
 
         return null;

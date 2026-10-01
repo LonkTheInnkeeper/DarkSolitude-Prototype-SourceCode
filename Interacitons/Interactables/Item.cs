@@ -6,14 +6,12 @@ public class Item : MonoBehaviour, ISavable
     [SerializeField] GameObject itemGraphics;
     [SerializeField] ItemScriptable item;
     [SerializeField] bool hideItem;
-    [Space]
-    [SerializeField] AudioSource audioSource;
 
     public void ApplyState()
     {
         Interaction interaction = gameObject.GetComponent<Interaction>();
 
-        if (!GameManager.Instance.CheckWorldState(id))
+        if (!GameManager.Instance.GetWorldState(id))
         {
             interaction.eventAvailable = true;
             itemGraphics.SetActive(true);
@@ -35,11 +33,7 @@ public class Item : MonoBehaviour, ISavable
 
         GameManager.Instance.player.GetComponent<Animator>().SetTrigger("Gathering");
 
-        if (audioSource != null)
-        {
-            audioSource.clip = audioMan.itemPickups[Random.Range(0, audioMan.itemPickups.Count)];
-            audioSource.Play();
-        }
+        GetComponent<AudioEmitter>().Play();
 
         if (hideItem)
         {

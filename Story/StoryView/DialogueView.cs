@@ -4,10 +4,12 @@ using Ink.Runtime;
 public class DialogueView : IStoryView
 {
     DialogueUI ui;
+    StoryRunner.StoryType storyType;
 
     public DialogueView(DialogueUI ui)
     {
         this.ui = ui;
+        storyType = StoryRunner.StoryType.Dialogue;
     }
 
     public void Open() => ui.OpenDialogue();
@@ -24,4 +26,6 @@ public class DialogueView : IStoryView
         => ui.PrintChoices(choices);
 
     public Story ProcessStory(Story story) => story;
+
+    StoryRunner.StoryType IStoryView.GetStoryType() => storyType;
 }

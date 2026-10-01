@@ -14,14 +14,13 @@ public class GameMenuUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI voiceLang;
 
     [Space]
-    [SerializeField] AudioClip buttonClip;
+    [SerializeField] string buttonClip;
 
     GameMenuDialoguesAnimations animations;
 
     UIManager uiMan;
     SaveLoadManager saveMan;
     GameManager gameMan;
-    AudioManager audioMan;
 
     SettingsData settingsData;
 
@@ -30,8 +29,6 @@ public class GameMenuUI : MonoBehaviour
         uiMan = UIManager.Instance;
         saveMan = SaveLoadManager.Instance;
         gameMan = GameManager.Instance;
-        audioMan = AudioManager.Instance;
-
         animations = GetComponent<GameMenuDialoguesAnimations>();
     }
 
@@ -80,43 +77,43 @@ public class GameMenuUI : MonoBehaviour
 
     public void SaveBtn()
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
         animations.SaveFileButton();
     }
 
     public void LoadBtn()
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
         animations.LoadFileButton();
     }
 
     public void OverwriteBtn()
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
         animations.SaveFileButton();
     }
 
     public void DeteleBtn()
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
         animations.DeleteFileButton();
     }
 
     public void SellectSlot(int index)
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
         uiMan.saveLoadUI.SellectSlot(index);
     }
 
     public void LoadGameBtn()
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
         saveMan.LoadGameData(saveMan.sellectedSaveSlot.gameData);
     }
 
     public void DeteleFileBtn()
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
         saveMan.DeteleFile();
     }
 
@@ -140,7 +137,7 @@ public class GameMenuUI : MonoBehaviour
 
     public void TextlanguageChangeBtn(bool increaseIndex)
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
 
         if (increaseIndex)
             gameMan.settingsData.NextTextLang();
@@ -153,7 +150,7 @@ public class GameMenuUI : MonoBehaviour
 
     public void VoiceLanguageChangeBtn(bool increaseIndex)
     {
-        audioMan.PlayUI(buttonClip);
+        AudioManager.Instance.ui.Play(buttonClip);
 
         if (increaseIndex)
             gameMan.settingsData.NextVoiceLang();

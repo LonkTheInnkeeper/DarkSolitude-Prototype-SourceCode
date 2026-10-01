@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuUI : MonoBehaviour
 {
-    public Animator shade;
+    public ScreenShade shade;
     bool settingsUp = false;
     public GameObject settings;
 
@@ -15,7 +15,7 @@ public class MainMenuUI : MonoBehaviour
 
     public void NewGame()
     {
-        shade.SetTrigger("Action");
+        shade.ShadeOnEvent();
     }
 
     public void SwitchScene()

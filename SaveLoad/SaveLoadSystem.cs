@@ -12,8 +12,6 @@ public static class SaveLoadSystem
     static bool debugError = true;
 
     static string basePath = "GameData/";
-    static string infoTextPath = "Resources/Story/Infotext/";
-
     static string gameSettingsPath = basePath + "GameSettings.json";
     static string GameDataPath = basePath + "GameData.json";
     static string inventoryPath = basePath + "InventoryData.json";
@@ -215,6 +213,42 @@ public static class SaveLoadSystem
     public static StoryData LoadStoryData(string name, string localisation)
     {
         string path = Path.Combine(Application.streamingAssetsPath, "Story", "Dialogues", name, name + "_" + localisation + ".json");
+
+        if (File.Exists(path))
+        {
+            StoryData storyData = new StoryData();
+            storyData = JsonConvert.DeserializeObject<StoryData>(File.ReadAllText(path));
+            return storyData;
+        }
+        else
+        {
+            Debug.LogWarning($"Story {name}.{localisation} does not exist");
+            Debug.LogWarning(path);
+            return null;
+        }
+    }
+
+    public static StoryData LoadCommentsData(string name, string localisation)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, "Story", "Comments", "Comments_" + localisation + ".json");
+
+        if (File.Exists(path))
+        {
+            StoryData storyData = new StoryData();
+            storyData = JsonConvert.DeserializeObject<StoryData>(File.ReadAllText(path));
+            return storyData;
+        }
+        else
+        {
+            Debug.LogWarning($"Story {name}.{localisation} does not exist");
+            Debug.LogWarning(path);
+            return null;
+        }
+    }
+
+    public static StoryData LoadDiaryData(string name, string localisation)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, "Story", "Diaries", name, name + "_" + localisation + ".json");
 
         if (File.Exists(path))
         {

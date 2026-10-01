@@ -26,7 +26,7 @@ public class StoryDatabase : MonoBehaviour
         string localisation = GameManager.Instance.settingsData.textLang.ToString();
         string commentName = $"{name}_{localisation}";
 
-        TextAsset comment = Resources.Load<TextAsset>($"Story/Comments/{name}/{localisation}/{commentName}");
+        TextAsset comment = Resources.Load<TextAsset>($"Story/Comments/{name}/{name}");
 
         if (comment == null)
         {
@@ -42,7 +42,7 @@ public class StoryDatabase : MonoBehaviour
         string localisation = GameManager.Instance.settingsData.textLang.ToString();
         string diaryName = $"{name}_{localisation}";
 
-        TextAsset diary = Resources.Load<TextAsset>($"Story/Diaries/{name}/{localisation}/{diaryName}");
+        TextAsset diary = Resources.Load<TextAsset>($"Story/Diaries/{name}/{name}");
 
         if (diary == null)
         {
@@ -90,7 +90,7 @@ public class StoryDatabase : MonoBehaviour
     public AudioClip GetCommentVoice(string commentNane, string line)
     {
         string localisation = GameManager.Instance.settingsData.voiceLang.ToString();
-        string clipName = $"{commentNane}_{localisation}_{line}";
+        string clipName = $"{line}_{localisation}";
         AudioClip clip = Resources.Load<AudioClip>($"Story/Comments/{commentNane}/{localisation}/{clipName}");
 
         if (clip == null)

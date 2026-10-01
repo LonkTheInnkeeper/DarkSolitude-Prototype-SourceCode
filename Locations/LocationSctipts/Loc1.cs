@@ -21,13 +21,13 @@ public class Loc1 : MonoBehaviour, ILocation
     private void Start()
     {
         ApplyState();
-        GameManager.Instance.AddWorldstate("new_game", false);
+        GameManager.Instance.SetWorldstate("new_game", false);
         GameManager.Instance.gameData.areaData.currentLocationID = id;
 
-        if (!GameManager.Instance.CheckWorldState(introComment) && startDialogueState)
+        if (!GameManager.Instance.GetWorldState(introComment) && startDialogueState)
         {
             StoryManager.Instance.StartComment(introComment);
-            GameManager.Instance.AddWorldstate(introComment, true);
+            GameManager.Instance.SetWorldstate(introComment, true);
         }
     }
 
@@ -36,9 +36,9 @@ public class Loc1 : MonoBehaviour, ILocation
         GameManager gameMan = GameManager.Instance;
 
         if (gameMan.gameData.areaData.worldStates.ContainsKey(doors1OnState))
-            doors1.SetDoorsOn(gameMan.CheckWorldState(doors1OnState));
+            doors1.SetDoorsOn(gameMan.GetWorldState(doors1OnState));
 
-        doors3.SetDoorUnlocked(gameMan.CheckWorldState(doors3UnlockState));
+        doors3.SetDoorUnlocked(gameMan.GetWorldState(doors3UnlockState));
     }
 
     public string GetID()
@@ -62,7 +62,8 @@ public class Loc1 : MonoBehaviour, ILocation
                 case "Tutorial":
                     {
                         print("Tutorial switch");
-                        tutorial.ToggleTutorial(); break;
+                        //tutorial.ToggleTutorial();
+                        break;
                     }
                 default:
                     print("No action"); break;

@@ -25,7 +25,7 @@ public class WalkTrigger : MonoBehaviour
         {
             print("Trigger enter");
             if (requiredState == null ||
-                gameMan.CheckWorldState(requiredState) == requiredStateValue)
+                gameMan.GetWorldState(requiredState) == requiredStateValue)
             {
                 Trigger();
             }
@@ -36,6 +36,6 @@ public class WalkTrigger : MonoBehaviour
     {
         print("Walk trigger");
         walkEvent.Invoke();
-        GameManager.Instance.AddWorldstate(addState, addStateValue);
+        GameManager.Instance.SetWorldstate(addState, addStateValue);
     }
 }

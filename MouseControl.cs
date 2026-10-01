@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,9 @@ public class MouseControl : MonoBehaviour
     GameManager gameMan;
     InventoryManager inventoryMan;
     UIManager uiMan;
+
+    [SerializeField] float doubleClickDelay;
+    bool doubleCLick = false;
 
     [Header("Cursor icons")]
     [SerializeField] Texture2D arrow;
@@ -131,6 +135,19 @@ public class MouseControl : MonoBehaviour
 
         Navigation();
         UseItem();
+
+        if (!doubleCLick)
+        {
+            StartCoroutine(DoubleCLickRoutine());
+        }
+    }
+
+    IEnumerator DoubleCLickRoutine()
+    {
+        yield return new WaitForSeconds(0.15f);
+        doubleCLick = true;
+        yield return new WaitForSeconds(doubleClickDelay);
+        doubleCLick = false;
     }
 
     private void RightClick()
@@ -186,6 +203,16 @@ public class MouseControl : MonoBehaviour
         if (interactable == null)
         {
             Vector3 target = hit.point;
+
+            if (!doubleCLick)
+            {
+                playerMovement.SetPlayerState(Movement.PlayerState.Walking);
+            }
+            else
+            {
+                playerMovement.SetPlayerState(Movement.PlayerState.Running);
+            }
+
             playerMovement.SetDestination(target);
         }
     }

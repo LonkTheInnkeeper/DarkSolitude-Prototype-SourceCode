@@ -1,21 +1,14 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class AudioDatabase : MonoBehaviour
+[CreateAssetMenu(menuName = "Scriptables/Audio Database")]
+public class AudioDatabase : ScriptableObject
 {
-    public List<AudioClip> uiClips;
-    public List<AudioClip> sfxClips;
+    [SerializeField] List<AudioElement> audioElements = new List<AudioElement>();
 
-    public AudioClip GetInventoryClip(string clipName)
+    public AudioClip Get(string id)
     {
-        AudioClip clip = Resources.Load<AudioClip>($"Audio/UI/Inventory/{clipName}");
-
-        if ( clip == null)
-        {
-            Debug.LogError($"Audio clip {clipName} does not exist");
-            return null;
-        }
-        
-        return clip;
+        return audioElements.FirstOrDefault(el => el.id == id).audioClip;
     }
 }

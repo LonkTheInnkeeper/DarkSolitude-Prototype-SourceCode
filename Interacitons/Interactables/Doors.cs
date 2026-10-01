@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Doors : MonoBehaviour
 {
@@ -15,7 +16,10 @@ public class Doors : MonoBehaviour
     [SerializeField] Animator doorAnimation;
     [SerializeField] DoorLock doorLock;
 
-    AudioSource audioSource;
+    [Space]
+    [SerializeField] AudioEmitter openSound;
+    [SerializeField] AudioEmitter closeSound;
+    
     string openTrigger = "Open";
     string closeTrigger = "Close";
 
@@ -23,8 +27,6 @@ public class Doors : MonoBehaviour
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-
         doorLock.SetDoorLock(doorUnlocked);
         doorLock.SetDoorsOn(doorOn);
     }
@@ -34,14 +36,30 @@ public class Doors : MonoBehaviour
         if (!doorUnlocked || !doorOn || transfering) return;
 
         ToggleDoorsAnimation(true);
-        StartCoroutine(TransferingRoutine());
+        StartCoroutine(TransferingLocationRoutine());
     }
 
-    IEnumerator TransferingRoutine()
+    public void TransferScene(int index)
+    {
+        if (!doorUnlocked || !doorOn || transfering) return;
+
+        ToggleDoorsAnimation(true);
+        StartCoroutine(TransferingSceneRoutine(index));
+    }
+
+    IEnumerator TransferingLocationRoutine()
     {
         transfering = true;
         yield return new WaitForSeconds(1);
         UIManager.Instance.screenShade.ShadeOnAction(() => LocationManager.Instance.SwitchLocation(this));
+        transfering = false;
+    }
+
+    IEnumerator TransferingSceneRoutine(int index)
+    {
+        transfering = true;
+        yield return new WaitForSeconds(1);
+        UIManager.Instance.screenShade.ShadeOnAction(() => SceneManager.LoadScene(index));
         transfering = false;
     }
 
@@ -60,11 +78,6 @@ public class Doors : MonoBehaviour
     {
         AudioManager audioMan = AudioManager.Instance;
 
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-        }
-
         if (doorAnimation == null)
         {
             doorAnimation = GetComponent<Animator>();
@@ -78,8 +91,7 @@ public class Doors : MonoBehaviour
             doorAnimation.SetTrigger(closeTrigger);
             doorLock.ToggleLockAnimation("Open");
 
-            audioSource.clip = audioMan.doorOpen;
-            audioSource.Play();
+            openSound.Play();
         }
         else
         {
@@ -87,8 +99,7 @@ public class Doors : MonoBehaviour
             doorAnimation.SetTrigger(openTrigger);
             doorLock.ToggleLockAnimation("Close");
 
-            audioSource.clip = audioMan.doorClose;
-            audioSource.Play();
+            closeSound.Play();
         }
 
         return true;

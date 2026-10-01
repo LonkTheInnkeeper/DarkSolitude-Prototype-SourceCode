@@ -20,13 +20,18 @@ public class CameraControl : MonoBehaviour
 
     bool forceSnap = false;
 
+    GameManager gameman;
+
     private void Start()
     {
+        gameman = GameManager.Instance;
         FocusOnPlayer();
     }
 
     void Update()
     {
+        if (gameman.closeupState) return;
+
         if (forceSnap)
         {
             transform.position = target.position + new Vector3(0, yOffset, 0);
@@ -34,10 +39,7 @@ public class CameraControl : MonoBehaviour
             return;
         }
 
-        if (GameManager.Instance.GetGameState() == GameManager.GameState.Navigation)
-        {
             FollowTarget(target);
-        }
 
         if (shakeTime > 0)
         {

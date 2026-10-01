@@ -14,7 +14,7 @@ public class UICursorDistanceTrigger : MonoBehaviour
     [SerializeField] UnityEvent minDistanceTrigger;
 
     RectTransform targetUI;
-    bool uiOpen;
+    bool isInside;
 
     public enum DistanceMode
     {
@@ -42,12 +42,12 @@ public class UICursorDistanceTrigger : MonoBehaviour
 
         if (distance > minDistance && distance < maxDistance) return;
 
-        if (distance > maxDistance && uiOpen)
+        if (distance > maxDistance && isInside)
         {
             MaxDistance();
         }
 
-        if (distance < minDistance && !uiOpen)
+        if (distance < minDistance && !isInside)
         {
             MinDistance();
         }
@@ -55,13 +55,13 @@ public class UICursorDistanceTrigger : MonoBehaviour
 
     void MinDistance()
     {
-        uiOpen = true;
+        isInside = true;
         minDistanceTrigger.Invoke();
     }
 
     void MaxDistance()
     {
-        uiOpen = false;
+        isInside = false;
         maxDistanceTrigger.Invoke();
     }
 
@@ -80,23 +80,24 @@ public class UICursorDistanceTrigger : MonoBehaviour
         }
     }
 
-    bool GameStateCheck()
+    private bool GameStateCheck()
     {
-        if (!applyActiveGameStates) return true;
+        if (!applyActiveGameStates)
+            return true;
+
+        GameManager.GameState currentState = GameManager.Instance.GetGameState();
 
         foreach (GameManager.GameState state in activeGameStates)
         {
-            if (state != GameManager.Instance.GetGameState())
-            {
-                return false;
-            }
+            if (state == currentState)
+                return true;
         }
 
-        return true;
+        return false;
     }
 
     public void ResetState()
     {
-        uiOpen = false;
+        isInside = false;
     }
 }

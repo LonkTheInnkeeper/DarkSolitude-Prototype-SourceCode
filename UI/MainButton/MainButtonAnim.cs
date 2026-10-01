@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class MainButtonAnim : MonoBehaviour, IUITrigger
 {
@@ -24,7 +23,7 @@ public class MainButtonAnim : MonoBehaviour, IUITrigger
     [Header("Audio")]
     [SerializeField] string menuUp;
     [SerializeField] string menuDown;
-    [SerializeField] string buttonUp;
+
 
     bool collapsed = true;
 
@@ -39,7 +38,8 @@ public class MainButtonAnim : MonoBehaviour, IUITrigger
     public string button4Name;
 
     private void Start()
-    {        bigTrigger.SetActive(false);
+    {
+        bigTrigger.SetActive(false);
     }
 
     private void Update()
@@ -55,32 +55,19 @@ public class MainButtonAnim : MonoBehaviour, IUITrigger
         {
             mainAnimator.SetTrigger("Close");
             collapsed = true;
-            AudioManager.Instance.PlayUI(menuDown);
+            AudioManager.Instance.ui.Play(menuDown);
         }
 
         if (distance < openDistance && collapsed)
         {
             mainAnimator.SetTrigger("Open");
-            AudioManager.Instance.PlayUI(menuUp);
+            AudioManager.Instance.ui.Play(menuUp);
             collapsed = false;
         }
     }
 
     public void CursorOnUI(bool trigger)
     {
-        //if (trigger)
-        //{
-        //    buttonAnimator.SetTrigger(name + "On");
-        //}
 
-        //else if (!trigger)
-        //{
-        //    buttonAnimator.SetTrigger(name + "Off");
-        //}
-
-        //else
-        //{
-        //    print("UI Main Button trigger does not exist");
-        //}
     }
 }

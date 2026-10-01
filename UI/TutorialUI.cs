@@ -31,6 +31,6 @@ public class TutorialUI : MonoBehaviour
         yield return new WaitForSeconds(1);
         tutorialUI.SetActive(false);
 
-        GameManager.Instance.AddWorldstate(tutorialState, true);
+        GameManager.Instance.SetWorldstate(tutorialState, true);
     }
 }

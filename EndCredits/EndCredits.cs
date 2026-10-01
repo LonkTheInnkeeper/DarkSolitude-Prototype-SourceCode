@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EndCredits : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class EndCredits : MonoBehaviour
     [SerializeField] TextMeshProUGUI skipButtonText;
     [Space]
     [SerializeField] int rollSpeed;
+    [SerializeField] ScreenShade shade;
 
     RectTransform rect;
     CreditsData creditsData;
@@ -50,5 +52,10 @@ public class EndCredits : MonoBehaviour
             right.text += "\n";
             left.text += "\n";
         }
+    }
+
+    public void EndGame()
+    {
+        SceneManager.LoadScene(0);
     }
 }

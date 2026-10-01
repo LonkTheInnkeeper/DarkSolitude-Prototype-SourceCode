@@ -39,6 +39,11 @@ public class CommentUI : MonoBehaviour
         SwitchPortrait();
     }
 
+    public void PrintStoryBlock(StoryBlock block)
+    {
+        PrintCommentText(block.text, string.Empty, block.tagData);
+    }
+
     public void NextComment()
     {
         storyMan.MakeStoryChoice(0);

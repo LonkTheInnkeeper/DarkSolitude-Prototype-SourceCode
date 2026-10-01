@@ -7,7 +7,7 @@ public class ScreenShadeRunner : MonoBehaviour
 
     public void TriggerShade()
     {
-        ScreenShade shade = FindFirstObjectByType<ScreenShade>();
+        ScreenShade shade = FindAnyObjectByType<ScreenShade>();
 
         shade.shadeAction = shadeEvent;
         shade.GetComponent<Animator>().SetTrigger("Action");

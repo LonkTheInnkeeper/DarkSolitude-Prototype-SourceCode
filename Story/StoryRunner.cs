@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Ink.Runtime;
 using UnityEngine;
 
+[Serializable]
 public class StoryRunner
 {
     public Story currentStory;
@@ -15,15 +17,24 @@ public class StoryRunner
     IStoryView currentView;
     string currentChoice = "";
     string currentSpeaker = "";
-    string storyName;
+    public string storyName;
 
     List<string> storyActions;
+
+    InkAPI inkAPI;
 
     public StoryRunner()
     {
         gameMan = GameManager.Instance;
         storyMan = StoryManager.Instance;
         audioMan = AudioManager.Instance;
+    }
+
+    public enum StoryType
+    {
+        Dialogue,
+        Comment,
+        Diary
     }
 
     public void StartStory(TextAsset inkFile, IStoryView storyView, string storyName)
@@ -34,7 +45,14 @@ public class StoryRunner
             return;
         }
 
-        storyData = SaveLoadSystem.LoadStoryData(storyName, gameMan.settingsData.textLang.ToString());
+        if (storyView.GetStoryType() == StoryType.Dialogue)
+            storyData = SaveLoadSystem.LoadStoryData(storyName, gameMan.settingsData.textLang.ToString());
+
+        else if (storyView.GetStoryType() == StoryType.Comment)
+            storyData = SaveLoadSystem.LoadCommentsData(storyName, gameMan.settingsData.textLang.ToString());
+
+        else if (storyView.GetStoryType() == StoryType.Diary)
+            storyData = SaveLoadSystem.LoadDiaryData(storyName, gameMan.settingsData.textLang.ToString());
 
         gameMan.player.GetComponent<Movement>().ForceStop();
 
@@ -48,6 +66,7 @@ public class StoryRunner
         currentChoice = string.Empty;
 
         currentStory = new Story(inkFile.text);
+        inkAPI = new InkAPI(currentStory);
         this.storyName = storyName;
 
         GameEvents.OnDialogueStart?.Invoke();
@@ -55,9 +74,9 @@ public class StoryRunner
         ContinueStory();
     }
 
-    void ContinueStory()
+    public void ContinueStory()
     {
-        if (currentStory.canContinue && currentStory != null)
+        if (currentStory != null && currentStory.canContinue)
         {
             string text = currentStory.Continue();
             ProcessTags();
@@ -78,22 +97,25 @@ public class StoryRunner
     {
         StoryBlock block = new StoryBlock();
 
-        try
+        if (storyData == null) Debug.Log("StoryData null");
+        if (currentStory == null) Debug.Log("CurrentStory null");
+
+        if (storyData.textDictionary.TryGetValue(currentStory.currentText.TrimEnd(), out string text))
         {
-            block.text = storyData.textDictionary[currentStory.currentText.TrimEnd()];
+            block.text = text;
         }
-        catch
+        else
         {
             block.text = $"Missing text {currentStory.currentText} in {storyName}/{gameMan.settingsData.textLang.ToString()}";
         }
 
         foreach (var choice in currentStory.currentChoices)
         {
-            try
+            if (storyData.choiceDictionary.TryGetValue(choice.text, out string choiceValue))
             {
-                block.choiceList.Add(storyData.choiceDictionary[choice.text]);
+                block.choiceList.Add(choiceValue);
             }
-            catch
+            else
             {
                 block.choiceList.Add($"Missing choice {choice.text} in {storyName}/{gameMan.settingsData.textLang.ToString()}");
             }
@@ -128,13 +150,13 @@ public class StoryRunner
             //Debug.Log("Story action: " + currentTags.action);
         }
 
-        if (currentTags.background != null)
-        {
-            PlayBackground();
-        }
-        else if (currentTags.background == "stop")
+        if (currentTags.background == "stop")
         {
             StopBackground();
+        }
+        else if (currentTags.background != null)
+        {
+            PlayBackground();
         }
     }
 
@@ -146,6 +168,8 @@ public class StoryRunner
 
         currentStory = null;
         currentChoice = "";
+
+        Debug.Log("Story events: " + storyActions.Count);
 
         if (storyActions.Count != 0)
             LocationManager.Instance.GetActiveILocation().TriggerStoryActions(storyActions);
@@ -193,21 +217,17 @@ public class StoryRunner
             clip = storyMan.storyDatabase.GetCommentVoice(storyName, text);
         }
 
-        audioMan.dialogueVoiceSource.clip = clip;
-        audioMan.dialogueVoiceSource.Play();
+        audioMan.voice.PlayVoice(clip);
     }
 
-    public void PlayBackground()
+    void PlayBackground()
     {
-        AudioClip clip = Resources.Load<AudioClip>($"Audio/Voice/Background/VoiceBackground_{currentTags.background}");
-
-        audioMan.voiceBackground.clip = clip;
-        audioMan.voiceBackground.Play();
+        audioMan.voice.PlayBackground(currentTags.background);
     }
 
-    public void StopBackground()
+    void StopBackground()
     {
-        audioMan.voiceBackground.Stop();
+        audioMan.voice.StopBackground();
     }
 }
 

@@ -1,5 +1,7 @@
+using System;
 using UnityEngine.InputSystem;
 
+[Serializable]
 public class SettingsData
 {
     public TextLang textLang;

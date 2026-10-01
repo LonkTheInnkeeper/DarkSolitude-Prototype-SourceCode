@@ -8,6 +8,9 @@ public class ItemDescriptionUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI itemName;
     [SerializeField] TextMeshProUGUI itemDescription;
 
+    [Space]
+    [SerializeField] string itemSwitch;
+
     bool desctriprionOpen = false;
 
     AudioManager audioMan;
@@ -28,7 +31,7 @@ public class ItemDescriptionUI : MonoBehaviour
         }
 
         if (GameManager.Instance.GetGameState() != GameManager.GameState.ItemHandling)
-            audioMan.PlayUI(audioMan.database.GetInventoryClip("ItemSwitch"));
+            AudioManager.Instance.ui.Play(itemSwitch);
 
         if (!desctriprionOpen)
         {

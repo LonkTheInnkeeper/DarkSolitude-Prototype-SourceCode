@@ -22,8 +22,8 @@ public class DiaryUI : MonoBehaviour
     [SerializeField] Animator animator;
 
     [Header("Audio")]
-    [SerializeField] AudioClip dialogueOpen;
-    [SerializeField] AudioClip dialogueClose;
+    [SerializeField] string dialogueOpen;
+    [SerializeField] string dialogueClose;
 
     List<RectTransform> content = new List<RectTransform>();
 
@@ -53,7 +53,7 @@ public class DiaryUI : MonoBehaviour
         diaryPanel.gameObject.SetActive(true);
         animator.SetTrigger("Open");
 
-        AudioManager.Instance.PlayUI(dialogueOpen);
+        AudioManager.Instance.ui.Play(dialogueOpen);
     }
 
     public void PrintDiary(string text, string choice, StoryTagData tags)
@@ -84,6 +84,16 @@ public class DiaryUI : MonoBehaviour
         }
     }
 
+    public void PrintChoices(List<string> choices)
+    {
+        for (int i = 0; i < choices.Count; i++)
+        {
+            var choice = Instantiate(choicePref, diaryContent);
+            choice.GetComponent<DialogueChoiceUI>().SetChoice(choices[i], i);
+            content.Add(choice);
+        }
+    }
+
     public void CloseDiary()
     {
         if (storyMan.exitAnimation != null)
@@ -95,7 +105,7 @@ public class DiaryUI : MonoBehaviour
         animator.SetTrigger("Close");
 
         GameManager.Instance.SetGameState(GameManager.GameState.Navigation);
-        AudioManager.Instance.PlayUI(dialogueClose);
+        AudioManager.Instance.ui.Play(dialogueClose);
 
         GameEvents.OnDialogueEnd?.Invoke();
     }
@@ -104,7 +114,7 @@ public class DiaryUI : MonoBehaviour
     {
         if (!slideLine.gameObject.activeInHierarchy) return;
 
-        slideLine.anchoredPosition = new Vector2(slideLine.anchoredPosition.x, slideLine.anchoredPosition.y + slideSpeed);
+        slideLine.anchoredPosition = new Vector2(slideLine.anchoredPosition.x, slideLine.anchoredPosition.y + slideSpeed * Time.deltaTime);
 
         if (slideLine.anchoredPosition.y >= 500)
         {
@@ -118,7 +128,7 @@ public class DiaryUI : MonoBehaviour
 
         RectTransform rect = runningText.rectTransform;
 
-        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y + slideSpeed);
+        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y + slideSpeed * Time.deltaTime);
 
         if (rect.anchoredPosition.y >= 400)
         {

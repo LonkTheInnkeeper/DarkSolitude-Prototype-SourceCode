@@ -4,10 +4,12 @@ using Ink.Runtime;
 public class CommentView : IStoryView
 {
     CommentUI ui;
+    StoryRunner.StoryType storyType;
 
     public CommentView(CommentUI ui)
     {
         this.ui = ui;
+        storyType = StoryRunner.StoryType.Comment;
     }
 
     public void Open() => ui.OpenComment();
@@ -22,7 +24,7 @@ public class CommentView : IStoryView
     public Story ProcessStory(Story story) => story;
 
     public void PrintStoryBlock(StoryBlock block)
-    {
-        throw new System.NotImplementedException();
-    }
+        => ui.PrintStoryBlock(block);
+
+    StoryRunner.StoryType IStoryView.GetStoryType() => storyType;
 }

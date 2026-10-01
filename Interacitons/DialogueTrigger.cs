@@ -8,18 +8,21 @@ public class DialogueTrigger : MonoBehaviour
 
     public void TriggerDialogue()
     {
-        if (!diary)
+        if (textAsset != null)
         {
-            StoryManager.Instance.StartDialogue(textAsset.name);
-        }
-        else
-        {
-            StoryManager.Instance.StartDiary(textAsset.name);
+            if (!diary)
+            {
+                StoryManager.Instance.StartDialogue(textAsset.name);
+            }
+            else
+            {
+                StoryManager.Instance.StartDiary(textAsset.name);
+            }
         }
 
         SwitchAnimation switchAnimation = GetComponent<SwitchAnimation>();
 
-        if (switchAnimation != null) 
+        if (switchAnimation != null)
         {
             StoryManager.Instance.exitAnimation = switchAnimation;
         }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -27,6 +28,12 @@ public class Inventory : MonoBehaviour
         gameMan = GameManager.Instance;
         uiMan = UIManager.Instance;
 
+        StartCoroutine(AddDebugItemsRoutine());
+    }
+
+    IEnumerator AddDebugItemsRoutine()
+    {
+        yield return new WaitForSeconds(0.1f);
         AddDebugItems();
     }
 

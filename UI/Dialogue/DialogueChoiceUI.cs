@@ -8,12 +8,9 @@ public class DialogueChoiceUI : MonoBehaviour, IUITrigger
     Button button;
     int choiceIndex;
 
-    AudioManager audioMan;
-
-    private void Start()
-    {
-        audioMan = AudioManager.Instance;
-    }
+    [Space]
+    [SerializeField] string dialogueSellect;
+    [SerializeField] string dialogueHover;
 
     public void SetChoice(string choiceText, int index)
     {
@@ -28,8 +25,7 @@ public class DialogueChoiceUI : MonoBehaviour, IUITrigger
 
     public void MakeChoice()
     {
-        audioMan.uiAudioSource.clip = audioMan.diaogueSellect;
-        audioMan.uiAudioSource.Play();
+        AudioManager.Instance.ui.Play(dialogueSellect);
         StoryManager.Instance.MakeStoryChoice(choiceIndex);
     }
 
@@ -37,9 +33,7 @@ public class DialogueChoiceUI : MonoBehaviour, IUITrigger
     {
         if (trigger)
         {
-            audioMan.uiAudioSource2.clip = audioMan.diaogueHover;
-            audioMan.uiAudioSource2.Play();
-
+            AudioManager.Instance.ui.Play(dialogueHover);
             GetComponent<Animator>().SetTrigger("Sellect");
         }
         else

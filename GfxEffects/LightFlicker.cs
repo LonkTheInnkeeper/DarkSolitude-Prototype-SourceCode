@@ -35,7 +35,7 @@ public class LightFlicker : MonoBehaviour, ISavable
     {
         print("Checking state");
 
-        if (GameManager.Instance.CheckWorldState("screwdriver_picked"))
+        if (GameManager.Instance.GetWorldState("screwdriver_picked"))
         {
             print("Check");
             flickerRenderer.sprite = lightOff;

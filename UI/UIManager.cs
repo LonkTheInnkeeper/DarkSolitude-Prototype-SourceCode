@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+[Serializable]
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
